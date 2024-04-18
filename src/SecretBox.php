@@ -13,7 +13,6 @@ class SecretBox implements KeyGenerator, DataEraser
 {
     use CryptoSodiumTrait;
 
-    public const IDENTIFIER = Identifier::SecretBoxGen1;
     private const NONCE_BYTES = SODIUM_CRYPTO_SECRETBOX_NONCEBYTES;
 
     public function generateKey(): string
@@ -22,8 +21,6 @@ class SecretBox implements KeyGenerator, DataEraser
     }
 
     /**
-     * @return string ciphertext with header
-     *
      * @throws Exception\CouldNotEncryptData
      */
     public function encrypt(
@@ -31,19 +28,20 @@ class SecretBox implements KeyGenerator, DataEraser
         #[SensitiveParameter]
         string &$key,
         ?string $nonce = null,
-    ): string {
+    ): CiphertextWithNonce {
         return $this->wrapEncryption(static function (string $message, string $nonce) use (&$key): string {
             return sodium_crypto_secretbox($message, $nonce, $key);
-        }, $message, nonce: $nonce);
+        }, $message, $nonce);
     }
 
     /**
      * @throws Exception\CouldNotDecryptData
      */
     public function decrypt(
-        string $ciphertextWithHeader,
+        CiphertextWithNonce|string $ciphertext,
         #[SensitiveParameter]
         string &$key,
+        ?string $nonce = null,
     ): string {
         return $this->wrapDecryption(static function (string $ciphertext, string $nonce) use (&$key): string {
             $message = sodium_crypto_secretbox_open($ciphertext, $nonce, $key);
@@ -51,6 +49,6 @@ class SecretBox implements KeyGenerator, DataEraser
                 throw new Exception\CouldNotDecryptData('sodium_crypto_secretbox_open', $ciphertext);
             }
             return $message;
-        }, $ciphertextWithHeader);
+        }, $ciphertext, $nonce);
     }
 }

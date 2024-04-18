@@ -10,24 +10,38 @@ abstract class CryptoSodiumTestCase extends TestCase
 {
     protected const MESSAGE = 'Hello, World!';
     protected object $instance;
-    protected array $encryptArgs;
-    protected string $ciphertextWithNonce;
-    protected array $decryptArgs;
+    protected CiphertextWithNonce $ciphertextWithNonce;
+    protected array $encryptArgsSet = [];
+    protected array $decryptArgsSet = [];
 
     public function testEncrypts(): void
     {
-        self::assertSame(
-            bin2hex($this->ciphertextWithNonce),
-            bin2hex(call_user_func_array([$this->instance, 'encrypt'], $this->encryptArgs)),
-        );
+        if (empty($this->encryptArgsSet)) {
+            self::markTestSkipped();
+        }
+
+        foreach ($this->encryptArgsSet as $name => $encryptArgs) {
+            self::assertSame(
+                bin2hex((string)$this->ciphertextWithNonce),
+                bin2hex((string)call_user_func_array([$this->instance, 'encrypt'], $encryptArgs)),
+                "{$name} failed",
+            );
+        }
     }
 
     public function testDecrypts(): void
     {
-        self::assertSame(
-            static::MESSAGE,
-            call_user_func_array([$this->instance, 'decrypt'], $this->decryptArgs),
-        );
+        if (empty($this->decryptArgsSet)) {
+            self::markTestSkipped();
+        }
+
+        foreach ($this->decryptArgsSet as $name => $decryptArgs) {
+            self::assertSame(
+                static::MESSAGE,
+                call_user_func_array([$this->instance, 'decrypt'], $decryptArgs),
+                "{$name} failed",
+            );
+        }
     }
 
     public function testWorksWithOwnKeyPair(): void

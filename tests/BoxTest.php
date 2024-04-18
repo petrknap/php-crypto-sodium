@@ -9,14 +9,20 @@ final class BoxTest extends CryptoSodiumTestCase
     protected function setUp(): void
     {
         parent::setUp();
-
         $this->instance = new Box();
-
         $keyPair = $this->instance->generateKeyPair(base64_decode('o8DJ9Tp7MT0nOjzzpnrjNQswHHJgwVKrtGgzwWlflaM='));
-        $nonce = base64_decode('mXVQMM6ud/69jDTsIGHTuNrktqcCebQR');
-        $this->encryptArgs = [self::MESSAGE, $keyPair, $nonce];
-        $this->ciphertextWithNonce = base64_decode('AZl1UDDOrnf+vYw07CBh07ja5LanAnm0EQffOOZDlD/HdZJPW0AVq7we7ppK4F+6YIyLFzW9');
-        $this->decryptArgs = [$this->ciphertextWithNonce, $keyPair];
+        $this->ciphertextWithNonce = new CiphertextWithNonce(
+            ciphertext: base64_decode('B9845kOUP8d1kk9bQBWrvB7umkrgX7pgjIsXNb0='),
+            nonce: base64_decode('mXVQMM6ud/69jDTsIGHTuNrktqcCebQR'),
+        );
+        $this->encryptArgsSet = [
+            [self::MESSAGE, $keyPair, $this->ciphertextWithNonce->nonce],
+        ];
+        $this->decryptArgsSet = [
+            [$this->ciphertextWithNonce, $keyPair],
+            [$this->ciphertextWithNonce->toString(), $keyPair],
+            [$this->ciphertextWithNonce->ciphertext, $keyPair, $this->ciphertextWithNonce->nonce],
+        ];
     }
 
     public function testKeyPairGeneratorThrowsOnWrongSeed(): void

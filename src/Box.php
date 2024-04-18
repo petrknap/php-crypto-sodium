@@ -14,7 +14,6 @@ class Box implements KeyPairGenerator, KeyPairExtractor, DataEraser
 {
     use CryptoSodiumTrait;
 
-    public const IDENTIFIER = Identifier::BoxGen1;
     private const NONCE_BYTES = SODIUM_CRYPTO_BOX_NONCEBYTES;
 
     public function generateKeyPair(
@@ -58,8 +57,6 @@ class Box implements KeyPairGenerator, KeyPairExtractor, DataEraser
     }
 
     /**
-     * @return string ciphertext with header
-     *
      * @throws Exception\CouldNotEncryptData
      */
     public function encrypt(
@@ -67,19 +64,20 @@ class Box implements KeyPairGenerator, KeyPairExtractor, DataEraser
         #[SensitiveParameter]
         string &$keyPair,
         ?string $nonce = null,
-    ): string {
+    ): CiphertextWithNonce {
         return $this->wrapEncryption(static function (string $message, string $nonce) use (&$keyPair): string {
             return sodium_crypto_box($message, $nonce, $keyPair);
-        }, $message, nonce: $nonce);
+        }, $message, $nonce);
     }
 
     /**
      * @throws Exception\CouldNotDecryptData
      */
     public function decrypt(
-        string $ciphertextWithHeader,
+        CiphertextWithNonce|string $ciphertext,
         #[SensitiveParameter]
         string &$keyPair,
+        ?string $nonce = null,
     ): string {
         return $this->wrapDecryption(static function (string $ciphertext, string $nonce) use (&$keyPair): string {
             $message = sodium_crypto_box_open($ciphertext, $nonce, $keyPair);
@@ -87,6 +85,6 @@ class Box implements KeyPairGenerator, KeyPairExtractor, DataEraser
                 throw new Exception\CouldNotDecryptData('sodium_crypto_box_open', $ciphertext);
             }
             return $message;
-        }, $ciphertextWithHeader);
+        }, $ciphertext, $nonce);
     }
 }

@@ -7,7 +7,7 @@ namespace PetrKnap\CryptoSodium\Exception;
 use PetrKnap\Shorts\ExceptionWrapper;
 use RuntimeException;
 
-final class CouldNotEraseData extends RuntimeException implements DataEraserException
+final class CouldNotGenerateKeyPair extends RuntimeException implements KeyPairGeneratorException
 {
     use ExceptionWrapper;
 }

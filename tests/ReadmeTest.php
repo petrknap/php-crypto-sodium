@@ -21,6 +21,7 @@ class ReadmeTest extends TestCase implements MarkdownFileTestInterface
     {
         return [
             SecretBox::class => 'bool(true)' . PHP_EOL,
+            Box::class => 'bool(true)' . PHP_EOL,
         ];
     }
 }

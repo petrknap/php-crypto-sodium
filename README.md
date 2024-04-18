@@ -22,6 +22,22 @@ var_dump($message === $secretBox->decrypt($ciphertext, $key));
 $secretBox->eraseData($key);
 ```
 
+### Authenticated asymmetric encryption
+
+```php
+use PetrKnap\CryptoSodium\Box;
+
+$box = new Box();
+$message = 'Hello World!';
+$keyPair = $box->generateKeyPair();
+$ciphertext = $box->encrypt($message, $keyPair);
+
+var_dump($message === $box->decrypt($ciphertext, $keyPair));
+
+$box->eraseData($keyPair);
+```
+
+
 ---
 
 Run `composer require petrknap/crypto-sodium` to install it.

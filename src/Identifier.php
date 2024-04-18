@@ -11,6 +11,7 @@ enum Identifier: string
 {
     public const BYTES = 1;
 
+    case BoxGen1 = '01';
     case SecretBoxGen1 = '00';
 
     public function toBinary(): string

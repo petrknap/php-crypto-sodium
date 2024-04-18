@@ -29,6 +29,7 @@ final class CryptoSodiumInterfaceTest extends TestCase
     public static function dataIsImplementedByClass(): array
     {
         return [
+            Box::class => [Box::class],
             SecretBox::class => [SecretBox::class],
         ];
     }

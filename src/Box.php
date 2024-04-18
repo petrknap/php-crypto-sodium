@@ -10,7 +10,7 @@ use Throwable;
 /**
  * @see sodium_crypto_box()
  */
-class Box implements KeyPairGenerator, DataEraser
+class Box implements KeyPairGenerator, KeyPairExtractor, DataEraser
 {
     use CryptoSodiumTrait;
 
@@ -32,6 +32,28 @@ class Box implements KeyPairGenerator, DataEraser
             return sodium_crypto_box_keypair();
         } catch (Throwable $reason) {
             throw new Exception\CouldNotGenerateKeyPair($reason);
+        }
+    }
+
+    public function extractSecretKey(
+        #[SensitiveParameter]
+        string &$keyPair,
+    ): string {
+        try {
+            return sodium_crypto_box_secretkey($keyPair);
+        } catch (Throwable $reason) {
+            throw new Exception\CouldNotExtractSecretKey($reason);
+        }
+    }
+
+    public function extractPublicKey(
+        #[SensitiveParameter]
+        string &$keyPair,
+    ): string {
+        try {
+            return sodium_crypto_box_publickey($keyPair);
+        } catch (Throwable $reason) {
+            throw new Exception\CouldNotExtractPublicKey($reason);
         }
     }
 

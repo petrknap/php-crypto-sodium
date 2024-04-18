@@ -29,4 +29,21 @@ abstract class CryptoSodiumTestCase extends TestCase
             call_user_func_array([$this->instance, 'decrypt'], $this->decryptArgs),
         );
     }
+
+    public function testWorksWithOwnKeyPair(): void
+    {
+        if (!($this->instance instanceof KeyPairGenerator && $this->instance instanceof KeyPairExtractor)) {
+            self::markTestSkipped();
+        }
+
+        $keyPair = $this->instance->generateKeyPair();
+
+        self::assertSame(
+            $keyPair,
+            $this->instance->generateKeyPair(
+                $this->instance->extractSecretKey($keyPair),
+                $this->instance->extractPublicKey($keyPair),
+            ),
+        );
+    }
 }

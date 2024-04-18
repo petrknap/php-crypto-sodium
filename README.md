@@ -2,7 +2,7 @@
 
 A simple library that packages functional `sodium_crypt_*` into objects.
 
-Inputs and outputs are binary data, don't be afraid to use the [petrknap/binary](../php-binary).
+Inputs and outputs are binary data, don't be afraid to use the [`petrknap/binary`](https://packagist.org/packages/petrknap/binary).
 
 
 ## Examples

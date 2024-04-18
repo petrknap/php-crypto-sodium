@@ -22,7 +22,16 @@
     }
   ],
   "homepage": "https://github.com/petrknap/php-crypto-sodium",
-  "keywords": [],
+  "keywords": [
+    "cryptography",
+    "encryption",
+    "decryption",
+    "security",
+    "ChaCha20",
+    "Poly1305",
+    "Curve25519",
+    "X25519"
+  ],
   "license": "LGPL-3.0-or-later",
   "name": "petrknap/crypto-sodium",
   "require": {

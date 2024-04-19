@@ -12,21 +12,19 @@ use SensitiveParameter;
 interface CryptoSodiumInterface
 {
     /**
-     * @return string ciphertext with header
-     *
      * @throws Exception\CouldNotEncryptData
      */
     public function encrypt(
         string $message,
         #[SensitiveParameter]
         string &$_,
-    ): string;
+    ): CiphertextWithNonce;
 
     /**
      * @throws Exception\CouldNotDecryptData
      */
     public function decrypt(
-        string $ciphertextWithHeader,
+        CiphertextWithNonce|string $ciphertext,
         #[SensitiveParameter]
         string &$_,
     ): string;

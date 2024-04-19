@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace PetrKnap\CryptoSodium;
 
-use PetrKnap\Binary\Byter;
-use RuntimeException;
+use InvalidArgumentException;
 use SensitiveParameter;
 use Throwable;
 
@@ -19,12 +18,15 @@ trait CryptoSodiumTrait
      *
      * @throws Exception\CouldNotEncryptData
      */
-    private function wrapEncryption(callable $encrypt, string $message, ?string $nonce = null): string
+    private function wrapEncryption(callable $encrypt, string $message, ?string $nonce): CiphertextWithNonce
     {
         try {
             $nonce ??= random_bytes(self::NONCE_BYTES);
             $ciphertext = $encrypt($message, $nonce);
-            return (new Byter())->unbite(self::IDENTIFIER->toBinary(), $nonce, $ciphertext);
+            return new CiphertextWithNonce(
+                ciphertext: $ciphertext,
+                nonce: $nonce,
+            );
         } catch (Exception\CouldNotEncryptData $exception) {
             throw $exception;
         } catch (Throwable $reason) {
@@ -37,23 +39,32 @@ trait CryptoSodiumTrait
      *
      * @throws Exception\CouldNotDecryptData
      */
-    private function wrapDecryption(callable $decrypt, string $ciphertextWithHeader): string
+    private function wrapDecryption(callable $decrypt, CiphertextWithNonce|string $ciphertext, ?string $nonce): string
     {
         try {
-            [$identifier, $nonce, $ciphertext] = (new Byter())->bite($ciphertextWithHeader, Identifier::BYTES, self::NONCE_BYTES);
-            $identifier = Identifier::fromBinary($identifier);
-            if ($identifier !== self::IDENTIFIER) { // @phpstan-ignore-line will not always evaluate to false
-                throw new RuntimeException(sprintf(
-                    '%s could not decrypt output of %s',
-                    self::IDENTIFIER->name,
-                    $identifier->name,
-                ));
+            if ($nonce !== null) {
+                if ($ciphertext instanceof CiphertextWithNonce) {
+                    throw new InvalidArgumentException('$ciphertext must be string, or $nonce must be null');
+                }
+                $ciphertextWithNonce = new CiphertextWithNonce(
+                    ciphertext: $ciphertext,
+                    nonce: $nonce,
+                );
+            } else {
+                if (is_string($ciphertext)) {
+                    $ciphertextWithNonce = CiphertextWithNonce::fromString(
+                        ciphertext: $ciphertext,
+                        nonceBytes: self::NONCE_BYTES,
+                    );
+                } else {
+                    $ciphertextWithNonce = $ciphertext;
+                }
             }
-            return $decrypt($ciphertext, $nonce);
+            return $decrypt($ciphertextWithNonce->ciphertext, $ciphertextWithNonce->nonce);
         } catch (Exception\CouldNotDecryptData $exception) {
             throw $exception;
         } catch (Throwable $reason) {
-            throw new Exception\CouldNotDecryptData(__METHOD__, $ciphertextWithHeader, $reason);
+            throw new Exception\CouldNotDecryptData(__METHOD__, (string) $ciphertext, $reason);
         }
     }
 

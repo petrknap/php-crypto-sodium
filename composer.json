@@ -27,6 +27,7 @@
     "encryption",
     "decryption",
     "security",
+    "sodium",
     "ChaCha20",
     "Poly1305",
     "Curve25519",

@@ -9,10 +9,13 @@ use PHPUnit\Framework\TestCase;
 abstract class CryptoSodiumTestCase extends TestCase
 {
     protected const MESSAGE = 'Hello, World!';
+
+    /** @var CryptoSodiumInterface|object */
     protected object $instance;
     protected CiphertextWithNonce $ciphertextWithNonce;
     protected array $encryptArgsSet = [];
     protected array $decryptArgsSet = [];
+    protected array $pushArgsSet = [];
 
     public function testEncrypts(): void
     {
@@ -22,8 +25,8 @@ abstract class CryptoSodiumTestCase extends TestCase
 
         foreach ($this->encryptArgsSet as $name => $encryptArgs) {
             self::assertSame(
-                bin2hex((string)$this->ciphertextWithNonce),
-                bin2hex((string)call_user_func_array([$this->instance, 'encrypt'], $encryptArgs)),
+                bin2hex((string) $this->ciphertextWithNonce),
+                bin2hex((string) $this->instance->encrypt(...$encryptArgs)),
                 "{$name} failed",
             );
         }
@@ -38,8 +41,38 @@ abstract class CryptoSodiumTestCase extends TestCase
         foreach ($this->decryptArgsSet as $name => $decryptArgs) {
             self::assertSame(
                 static::MESSAGE,
-                call_user_func_array([$this->instance, 'decrypt'], $decryptArgs),
+                $this->instance->decrypt(...$decryptArgs),
                 "{$name} failed",
+            );
+        }
+    }
+
+    public function testPushesAndPulls(): void
+    {
+        if (empty($this->pushArgsSet)) {
+            self::markTestSkipped();
+        }
+
+        $key = $this->instance->generateKey();
+        $pushStream = $this->instance->initPush($key);
+        $messages = [];
+        $additionalData = [];
+        $ciphertexts = [];
+        foreach ($this->pushArgsSet as $pushArgs) {
+            $message = $pushArgs[0];
+            if (is_string($message)) {
+                $tag = $pushArgs[1] ?? constant($this->instance::class . '::DEFAULT_TAG');
+                $message = new MessageWithTag($message, $tag);
+            }
+            $messages[] = $message;
+            $additionalData[] = $pushArgs[2] ?? null;
+            $ciphertexts[] = $pushStream->push(...$pushArgs);
+        }
+        $pullStream = $this->instance->initPull($pushStream, $key);
+        foreach ($ciphertexts as $i => $ciphertext) {
+            self::assertEquals(
+                $messages[$i],
+                $pullStream->pull($ciphertext, $additionalData[$i]),
             );
         }
     }

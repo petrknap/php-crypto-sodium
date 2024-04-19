@@ -27,5 +27,47 @@ interface CryptoSodiumInterface
         CiphertextWithNonce|string $ciphertext,
         #[SensitiveParameter]
         string &$_,
+        ?string $nonce = null,
     ): string;
+
+    /**
+     * @throws Exception\CouldNotEncryptData
+     */
+    public function initPush(
+        #[SensitiveParameter]
+        string &$_,
+    ): PushStream;
+
+    /**
+     * @throws Exception\CouldNotEncryptData
+     */
+    public function push(
+        PushStream &$stream,
+        MessageWithTag|string $message,
+        ?int $tag = null,
+    ): string;
+
+    /**
+     * @throws Exception\CouldNotDecryptData
+     */
+    public function initPull(
+        PushStream|string $header,
+        #[SensitiveParameter]
+        string &$_,
+    ): PullStream;
+
+    /**
+     * @throws Exception\CouldNotDecryptData
+     */
+    public function pull(
+        PullStream &$stream,
+        string $ciphertext,
+    ): MessageWithTag;
+
+    /**
+     * @throws Exception\CouldNotRekey
+     */
+    public function rekey(
+        Stream &$stream,
+    ): void;
 }

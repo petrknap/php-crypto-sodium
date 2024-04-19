@@ -1,13 +1,13 @@
 # Crypto Sodium
 
-A simple library that packages functional `sodium_crypt_*` into objects.
+A simple library that packages [functional `sodium_crypt_*`](https://www.php.net/manual/en/book.sodium.php) into objects.
 
-Inputs and outputs are binary data, don't be afraid to use the [`petrknap/binary`](https://packagist.org/packages/petrknap/binary).
+Inputs and outputs are binary data, don't be afraid to use the [`petrknap/binary`](https://github.com/petrknap/php-binary).
 
 
 ## Examples
 
-### Authenticated symmetric encryption
+### Symmetric block encryption
 
 ```php
 use PetrKnap\CryptoSodium\SecretBox;
@@ -15,14 +15,15 @@ use PetrKnap\CryptoSodium\SecretBox;
 $secretBox = new SecretBox();
 $message = 'Hello World!';
 $key = $secretBox->generateKey();
+
 $ciphertext = $secretBox->encrypt($message, $key);
 
-var_dump($message === $secretBox->decrypt($ciphertext, $key));
+echo $secretBox->decrypt($ciphertext, $key);
 
 $secretBox->eraseData($key);
 ```
 
-### Authenticated asymmetric encryption
+### Asymmetric block encryption
 
 ```php
 use PetrKnap\CryptoSodium\Box;
@@ -30,11 +31,34 @@ use PetrKnap\CryptoSodium\Box;
 $box = new Box();
 $message = 'Hello World!';
 $keyPair = $box->generateKeyPair();
+
 $ciphertext = $box->encrypt($message, $keyPair);
 
-var_dump($message === $box->decrypt($ciphertext, $keyPair));
+echo $box->decrypt($ciphertext, $keyPair);
 
 $box->eraseData($keyPair);
+```
+
+### Symmetric stream encryption
+
+```php
+use PetrKnap\CryptoSodium\SecretStream\XChaCha20Poly1305;
+
+$xChaCha20Poly1305 = new XChaCha20Poly1305();
+$messageChunk1 = 'Hello ';
+$messageChunk2 = 'World!';
+$key = $xChaCha20Poly1305->generateKey();
+
+$pushStream = $xChaCha20Poly1305->initPush($key);
+$ciphertextHeader = $pushStream->header;
+$ciphertextChunk1 = $pushStream->push($messageChunk1);
+$ciphertextChunk2 = $pushStream->push($messageChunk2, tag: XChaCha20Poly1305::TAG_FINAL);
+
+$pullStream = $xChaCha20Poly1305->initPull($ciphertextHeader, $key);
+echo $pullStream->pull($ciphertextChunk1);
+echo $pullStream->pull($ciphertextChunk2);
+
+$xChaCha20Poly1305->eraseData($key);
 ```
 
 

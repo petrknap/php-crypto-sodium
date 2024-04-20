@@ -14,7 +14,7 @@ final class CryptoSodiumInterfaceTest extends TestCase
     {
         exec(
             sprintf(
-                'php -r "require_once \'%s\'; final class C extends %s implements %s {}"',
+                'php -r "require_once \'%s\'; abstract class C extends %s implements %s {}"',
                 __DIR__ . '/../vendor/autoload.php',
                 $className,
                 CryptoSodiumInterface::class,
@@ -31,6 +31,7 @@ final class CryptoSodiumInterfaceTest extends TestCase
         return [
             Box::class => [Box::class],
             SecretBox::class => [SecretBox::class],
+            SecretStream\XChaCha20Poly1305::class => [SecretStream\XChaCha20Poly1305::class],
         ];
     }
 }

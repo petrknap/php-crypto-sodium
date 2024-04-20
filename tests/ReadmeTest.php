@@ -20,8 +20,9 @@ class ReadmeTest extends TestCase implements MarkdownFileTestInterface
     public static function getExpectedOutputsOfPhpExamples(): iterable
     {
         return [
-            SecretBox::class => 'bool(true)' . PHP_EOL,
-            Box::class => 'bool(true)' . PHP_EOL,
+            SecretBox::class => 'Hello World!',
+            Box::class => 'Hello World!',
+            SecretStream\XChaCha20Poly1305::class => 'Hello World!',
         ];
     }
 }

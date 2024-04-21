@@ -4,23 +4,29 @@ declare(strict_types=1);
 
 namespace PetrKnap\CryptoSodium;
 
-use Stringable;
+use PetrKnap\Binary\BinariableInterface;
+use PetrKnap\Binary\BinariableTrait;
 
-final class MessageWithTag implements Stringable
+final class MessageWithTag implements BinariableInterface
 {
+    use BinariableTrait;
+
     public function __construct(
         public readonly string $message,
         public readonly int $tag,
     ) {
     }
 
-    public function toString(): string
+    public function toBinary(): string
     {
         return $this->message;
     }
 
-    public function __toString(): string
+    /**
+     * @deprecated use {@see self::toBinary()}
+     */
+    public function toString(): string
     {
-        return $this->toString();
+        return $this->toBinary();
     }
 }

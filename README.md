@@ -61,6 +61,23 @@ echo $pullStream->pull($ciphertextChunk2);
 $xChaCha20Poly1305->eraseData($key);
 ```
 
+### Symmetric block encryption with additional data
+
+```php
+use PetrKnap\CryptoSodium\Aead\Aes256Gcm;
+
+$aes256Gcm = new Aes256Gcm();
+$message = 'Hello World!';
+$purpose = 'example';
+$key = $aes256Gcm->generateKey();
+
+$ciphertext = $aes256Gcm->encrypt($message, $key, additionalData: $purpose);
+
+echo $aes256Gcm->decrypt($ciphertext, $key, additionalData: $purpose);
+
+$aes256Gcm->eraseData($key);
+```
+
 
 ---
 

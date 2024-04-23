@@ -78,7 +78,6 @@ echo $aes256Gcm->decrypt($ciphertext, $key, additionalData: $purpose);
 $aes256Gcm->eraseData($key);
 ```
 
-
 ---
 
 Run `composer require petrknap/crypto-sodium` to install it.

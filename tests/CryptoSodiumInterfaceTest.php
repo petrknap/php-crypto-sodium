@@ -30,6 +30,7 @@ final class CryptoSodiumInterfaceTest extends TestCase
     {
         return [
             Aead\Aes256Gcm::class => [Aead\Aes256Gcm::class],
+            Aead\ChaCha20Poly1305::class => [Aead\ChaCha20Poly1305::class],
             Box::class => [Box::class],
             SecretBox::class => [SecretBox::class],
             SecretStream\XChaCha20Poly1305::class => [SecretStream\XChaCha20Poly1305::class],

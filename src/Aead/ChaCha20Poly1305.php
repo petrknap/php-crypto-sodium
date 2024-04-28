@@ -18,6 +18,9 @@ class ChaCha20Poly1305 implements KeyGenerator, DataEraser
 {
     use CryptoSodiumTrait;
 
+    /**
+     * @deprecated
+     */
     public const HEADER_BYTES = SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_NPUBBYTES;
 
     public function generateKey(): string

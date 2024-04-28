@@ -13,6 +13,9 @@ class SecretBox implements KeyGenerator, DataEraser
 {
     use CryptoSodiumTrait;
 
+    /**
+     * @deprecated
+     */
     public const HEADER_BYTES = SODIUM_CRYPTO_SECRETBOX_NONCEBYTES;
 
     public function generateKey(): string

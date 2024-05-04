@@ -19,6 +19,9 @@ class Aes256Gcm implements KeyGenerator, DataEraser
 {
     use CryptoSodiumTrait;
 
+    /**
+     * @deprecated
+     */
     public const HEADER_BYTES = SODIUM_CRYPTO_AEAD_AES256GCM_NPUBBYTES;
 
     public function __construct()

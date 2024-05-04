@@ -14,6 +14,9 @@ class Box implements KeyPairGenerator, KeyPairExtractor, DataEraser
 {
     use CryptoSodiumTrait;
 
+    /**
+     * @deprecated
+     */
     public const HEADER_BYTES = SODIUM_CRYPTO_BOX_NONCEBYTES;
 
     public function generateKeyPair(

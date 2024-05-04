@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace PetrKnap\CryptoSodium;
 
+use PetrKnap\Binary\BinariableInterface;
+use PetrKnap\Binary\BinariableTrait;
 use SensitiveParameter;
-use Stringable;
 
-final class PushStream extends Stream implements Stringable
+final class PushStream extends Stream implements BinariableInterface
 {
+    use BinariableTrait;
+
     /**
      * @internal there is no reason to call it from the outside
      */
@@ -32,13 +35,16 @@ final class PushStream extends Stream implements Stringable
         );
     }
 
-    public function toString(): string
+    public function toBinary(): string
     {
         return $this->header;
     }
 
-    public function __toString(): string
+    /**
+     * @deprecated use {@see self::toBinary()}
+     */
+    public function toString(): string
     {
-        return $this->toString();
+        return $this->toBinary();
     }
 }

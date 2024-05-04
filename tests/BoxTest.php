@@ -20,7 +20,7 @@ final class BoxTest extends CryptoSodiumTestCase
         ];
         $this->decryptArgsSet = [
             [$this->ciphertextWithNonce, $keyPair],
-            [$this->ciphertextWithNonce->toString(), $keyPair],
+            [$this->ciphertextWithNonce->toBinary(), $keyPair],
             [$this->ciphertextWithNonce->ciphertext, $keyPair, $this->ciphertextWithNonce->nonce],
         ];
     }

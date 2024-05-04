@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace PetrKnap\CryptoSodium;
 
+use PetrKnap\Binary\BinariableInterface;
+use PetrKnap\Binary\BinariableTrait;
 use PetrKnap\Binary\Byter;
-use Stringable;
 
-final class CiphertextWithNonce implements Stringable
+final class CiphertextWithNonce implements BinariableInterface
 {
+    use BinariableTrait;
+
     public function __construct(
         public readonly string $ciphertext,
         public readonly string $nonce,
@@ -27,13 +30,16 @@ final class CiphertextWithNonce implements Stringable
         );
     }
 
-    public function toString(): string
+    public function toBinary(): string
     {
         return (new Byter())->unbite($this->nonce, $this->ciphertext);
     }
 
-    public function __toString(): string
+    /**
+     * @deprecated use {@see self::toBinary()}
+     */
+    public function toString(): string
     {
-        return $this->toString();
+        return $this->toBinary();
     }
 }

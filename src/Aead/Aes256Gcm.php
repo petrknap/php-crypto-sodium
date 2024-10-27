@@ -11,13 +11,12 @@ use PetrKnap\CryptoSodium\Exception;
 use PetrKnap\CryptoSodium\KeyGenerator;
 use PetrKnap\Optional\OptionalString;
 use PetrKnap\Shorts\Exception\MissingRequirement;
+use PetrKnap\Shorts\HasRequirements;
 use SensitiveParameter;
 
-/**
- * @see sodium_crypto_aead_aes256gcm_encrypt()
- */
-class Aes256Gcm implements KeyGenerator, DataEraser
+/* final */class Aes256Gcm implements KeyGenerator, DataEraser
 {
+    use HasRequirements;
     use CryptoSodiumTrait;
 
     /**
@@ -31,6 +30,18 @@ class Aes256Gcm implements KeyGenerator, DataEraser
 
     public function __construct()
     {
+        self::checkRequirements(
+            functions: [
+                'sodium_crypto_aead_aes256gcm_is_available',
+                'sodium_crypto_aead_aes256gcm_keygen',
+                'sodium_crypto_aead_aes256gcm_encrypt',
+                'sodium_crypto_aead_aes256gcm_decrypt',
+            ],
+            constants: [
+                'SODIUM_CRYPTO_AEAD_AES256GCM_NPUBBYTES',
+            ],
+        );
+
         if (!sodium_crypto_aead_aes256gcm_is_available()) {
             throw new MissingRequirement(self::class, 'available', 'aes256gcm');
         }
@@ -48,12 +59,11 @@ class Aes256Gcm implements KeyGenerator, DataEraser
         string $message,
         #[SensitiveParameter]
         string &$key,
-        ?string $nonce = null,
-        ?string $additionalData = null,
+        string|null $nonce = null,
+        string|null $additionalData = null,
     ): CiphertextWithNonce {
         return $this->wrapEncryption(static function (string $message, string $nonce) use (&$key, $additionalData): string {
-            $additionalData ??= '';
-            return sodium_crypto_aead_aes256gcm_encrypt($message, $additionalData, $nonce, $key);
+            return sodium_crypto_aead_aes256gcm_encrypt($message, $additionalData ?? '', $nonce, $key);
         }, $message, $nonce, self::NONCE_BYTES);
     }
 
@@ -64,8 +74,8 @@ class Aes256Gcm implements KeyGenerator, DataEraser
         CiphertextWithNonce|string $ciphertext,
         #[SensitiveParameter]
         string &$key,
-        ?string $nonce = null,
-        ?string $additionalData = null,
+        string|null $nonce = null,
+        string|null $additionalData = null,
     ): string {
         return $this->wrapDecryption(static function (string $ciphertext, string $nonce) use (&$key, $additionalData): string {
             return OptionalString::ofFalsable(sodium_crypto_aead_aes256gcm_decrypt($ciphertext, $additionalData ?? '', $nonce, $key))->orElseThrow(

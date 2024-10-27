@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace PetrKnap\CryptoSodium;
 
 use PetrKnap\Optional\OptionalString;
+use PetrKnap\Shorts\HasRequirements;
 use SensitiveParameter;
 use Throwable;
 
-/**
- * @see sodium_crypto_box()
- */
-class Box implements KeyPairGenerator, KeyPairExtractor, DataEraser
+/* final */class Box implements KeyPairGenerator, KeyPairExtractor, DataEraser
 {
+    use HasRequirements;
     use CryptoSodiumTrait;
 
     /**
@@ -24,10 +23,28 @@ class Box implements KeyPairGenerator, KeyPairExtractor, DataEraser
 
     private const NONCE_BYTES = SODIUM_CRYPTO_BOX_NONCEBYTES;
 
+    public function __construct()
+    {
+        self::checkRequirements(
+            functions: [
+                'sodium_crypto_box_keypair_from_secretkey_and_publickey',
+                'sodium_crypto_box_seed_keypair',
+                'sodium_crypto_box_keypair',
+                'sodium_crypto_box_secretkey',
+                'sodium_crypto_box_publickey',
+                'sodium_crypto_box',
+                'sodium_crypto_box_open',
+            ],
+            constants: [
+                'SODIUM_CRYPTO_BOX_NONCEBYTES',
+            ],
+        );
+    }
+
     public function generateKeyPair(
         #[SensitiveParameter]
-        ?string $seedOrSecretKey = null,
-        ?string $publicKey = null,
+        string|null $seedOrSecretKey = null,
+        string|null $publicKey = null,
     ): string {
         try {
             if ($seedOrSecretKey !== null && $publicKey !== null) {
@@ -71,7 +88,7 @@ class Box implements KeyPairGenerator, KeyPairExtractor, DataEraser
         string $message,
         #[SensitiveParameter]
         string &$keyPair,
-        ?string $nonce = null,
+        string|null $nonce = null,
     ): CiphertextWithNonce {
         return $this->wrapEncryption(static function (string $message, string $nonce) use (&$keyPair): string {
             return sodium_crypto_box($message, $nonce, $keyPair);
@@ -85,7 +102,7 @@ class Box implements KeyPairGenerator, KeyPairExtractor, DataEraser
         CiphertextWithNonce|string $ciphertext,
         #[SensitiveParameter]
         string &$keyPair,
-        ?string $nonce = null,
+        string|null $nonce = null,
     ): string {
         return $this->wrapDecryption(static function (string $ciphertext, string $nonce) use (&$keyPair): string {
             return OptionalString::ofFalsable(sodium_crypto_box_open($ciphertext, $nonce, $keyPair))->orElseThrow(

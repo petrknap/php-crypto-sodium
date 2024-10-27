@@ -27,7 +27,7 @@ interface CryptoSodiumInterface
         CiphertextWithNonce|string $ciphertext,
         #[SensitiveParameter]
         string &$_,
-        ?string $nonce = null,
+        string|null $nonce = null,
     ): string;
 
     /**
@@ -44,7 +44,7 @@ interface CryptoSodiumInterface
     public function push(
         PushStream &$stream,
         MessageWithTag|string $message,
-        ?int $tag = null,
+        int|null $tag = null,
     ): string;
 
     /**

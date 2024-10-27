@@ -16,14 +16,13 @@ use PetrKnap\CryptoSodium\PullStream;
 use PetrKnap\CryptoSodium\PushStream;
 use PetrKnap\CryptoSodium\Stream;
 use PetrKnap\Optional\OptionalArray;
+use PetrKnap\Shorts\HasRequirements;
 use SensitiveParameter;
 use Throwable;
 
-/**
- * @see sodium_crypto_secretstream_xchacha20poly1305_init_push()
- */
-class XChaCha20Poly1305 implements HeadedCipher, KeyGenerator, DataEraser
+/* final */class XChaCha20Poly1305 implements HeadedCipher, KeyGenerator, DataEraser
 {
+    use HasRequirements;
     use CryptoSodiumTrait;
 
     /**
@@ -39,6 +38,26 @@ class XChaCha20Poly1305 implements HeadedCipher, KeyGenerator, DataEraser
     public const TAG_FINAL = SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_FINAL;
     /** @internal there is no reason to use it from the outside */
     public const DEFAULT_TAG = self::TAG_MESSAGE;
+
+    public function __construct()
+    {
+        self::checkRequirements(
+            functions: [
+                'sodium_crypto_secretstream_xchacha20poly1305_keygen',
+                'sodium_crypto_secretstream_xchacha20poly1305_init_push',
+                'sodium_crypto_secretstream_xchacha20poly1305_push',
+                'sodium_crypto_secretstream_xchacha20poly1305_init_pull',
+                'sodium_crypto_secretstream_xchacha20poly1305_pull',
+            ],
+            constants: [
+                'SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_HEADERBYTES',
+                'SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_MESSAGE',
+                'SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_REKEY',
+                'SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_PUSH',
+                'SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_FINAL',
+            ],
+        );
+    }
 
     public function getHeaderSize(): int
     {
@@ -75,13 +94,12 @@ class XChaCha20Poly1305 implements HeadedCipher, KeyGenerator, DataEraser
     public function push(
         PushStream &$stream,
         MessageWithTag|string $message,
-        ?int $tag = null,
-        ?string $additionalData = null,
+        int|null $tag = null,
+        string|null $additionalData = null,
     ): string {
-        return $this->wrapPush(function (string $message, ?int $tag) use (&$stream, $additionalData): string {
+        return $this->wrapPush(function (string $message, int|null $tag) use (&$stream, $additionalData): string {
             $tag ??= self::DEFAULT_TAG;
-            $additionalData ??= '';
-            $ciphertext = sodium_crypto_secretstream_xchacha20poly1305_push($stream->state, $message, $additionalData, $tag);
+            $ciphertext = sodium_crypto_secretstream_xchacha20poly1305_push($stream->state, $message, $additionalData ?? '', $tag);
             $this->updateStream($stream, $tag);
             return $ciphertext;
         }, $message, $tag);
@@ -113,7 +131,7 @@ class XChaCha20Poly1305 implements HeadedCipher, KeyGenerator, DataEraser
     public function pull(
         PullStream &$stream,
         string $ciphertext,
-        ?string $additionalData = null,
+        string|null $additionalData = null,
     ): MessageWithTag {
         return $this->wrapPull(function (string $ciphertext) use (&$stream, $additionalData): MessageWithTag {
             /**

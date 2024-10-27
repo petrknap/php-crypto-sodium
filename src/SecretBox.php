@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace PetrKnap\CryptoSodium;
 
 use PetrKnap\Optional\OptionalString;
+use PetrKnap\Shorts\HasRequirements;
 use SensitiveParameter;
 
-/**
- * @see sodium_crypto_secretbox()
- */
-class SecretBox implements KeyGenerator, DataEraser
+/* final */class SecretBox implements KeyGenerator, DataEraser
 {
+    use HasRequirements;
     use CryptoSodiumTrait;
 
     /**
@@ -22,6 +21,20 @@ class SecretBox implements KeyGenerator, DataEraser
     public const HEADER_BYTES = self::NONCE_BYTES;
 
     private const NONCE_BYTES = SODIUM_CRYPTO_SECRETBOX_NONCEBYTES;
+
+    public function __construct()
+    {
+        self::checkRequirements(
+            functions: [
+                'sodium_crypto_secretbox_keygen',
+                'sodium_crypto_secretbox',
+                'sodium_crypto_secretbox_open',
+            ],
+            constants: [
+                'SODIUM_CRYPTO_SECRETBOX_NONCEBYTES',
+            ],
+        );
+    }
 
     public function generateKey(): string
     {
@@ -35,7 +48,7 @@ class SecretBox implements KeyGenerator, DataEraser
         string $message,
         #[SensitiveParameter]
         string &$key,
-        ?string $nonce = null,
+        string|null $nonce = null,
     ): CiphertextWithNonce {
         return $this->wrapEncryption(static function (string $message, string $nonce) use (&$key): string {
             return sodium_crypto_secretbox($message, $nonce, $key);
@@ -49,7 +62,7 @@ class SecretBox implements KeyGenerator, DataEraser
         CiphertextWithNonce|string $ciphertext,
         #[SensitiveParameter]
         string &$key,
-        ?string $nonce = null,
+        string|null $nonce = null,
     ): string {
         return $this->wrapDecryption(static function (string $ciphertext, string $nonce) use (&$key): string {
             return OptionalString::ofFalsable(sodium_crypto_secretbox_open($ciphertext, $nonce, $key))->orElseThrow(

@@ -13,7 +13,7 @@ interface KeyPairGenerator
      */
     public function generateKeyPair(
         #[SensitiveParameter]
-        ?string $seedOrSecretKey = null,
-        ?string $publicKey = null,
+        string|null $seedOrSecretKey = null,
+        string|null $publicKey = null,
     ): string;
 }

@@ -26,8 +26,8 @@ class Box implements KeyPairGenerator, KeyPairExtractor, DataEraser
 
     public function generateKeyPair(
         #[SensitiveParameter]
-        ?string $seedOrSecretKey = null,
-        ?string $publicKey = null,
+        string|null $seedOrSecretKey = null,
+        string|null $publicKey = null,
     ): string {
         try {
             if ($seedOrSecretKey !== null && $publicKey !== null) {
@@ -71,7 +71,7 @@ class Box implements KeyPairGenerator, KeyPairExtractor, DataEraser
         string $message,
         #[SensitiveParameter]
         string &$keyPair,
-        ?string $nonce = null,
+        string|null $nonce = null,
     ): CiphertextWithNonce {
         return $this->wrapEncryption(static function (string $message, string $nonce) use (&$keyPair): string {
             return sodium_crypto_box($message, $nonce, $keyPair);
@@ -85,7 +85,7 @@ class Box implements KeyPairGenerator, KeyPairExtractor, DataEraser
         CiphertextWithNonce|string $ciphertext,
         #[SensitiveParameter]
         string &$keyPair,
-        ?string $nonce = null,
+        string|null $nonce = null,
     ): string {
         return $this->wrapDecryption(static function (string $ciphertext, string $nonce) use (&$keyPair): string {
             return OptionalString::ofFalsable(sodium_crypto_box_open($ciphertext, $nonce, $keyPair))->orElseThrow(

@@ -48,8 +48,8 @@ class Aes256Gcm implements KeyGenerator, DataEraser
         string $message,
         #[SensitiveParameter]
         string &$key,
-        ?string $nonce = null,
-        ?string $additionalData = null,
+        string|null $nonce = null,
+        string|null $additionalData = null,
     ): CiphertextWithNonce {
         return $this->wrapEncryption(static function (string $message, string $nonce) use (&$key, $additionalData): string {
             $additionalData ??= '';
@@ -64,8 +64,8 @@ class Aes256Gcm implements KeyGenerator, DataEraser
         CiphertextWithNonce|string $ciphertext,
         #[SensitiveParameter]
         string &$key,
-        ?string $nonce = null,
-        ?string $additionalData = null,
+        string|null $nonce = null,
+        string|null $additionalData = null,
     ): string {
         return $this->wrapDecryption(static function (string $ciphertext, string $nonce) use (&$key, $additionalData): string {
             return OptionalString::ofFalsable(sodium_crypto_aead_aes256gcm_decrypt($ciphertext, $additionalData ?? '', $nonce, $key))->orElseThrow(

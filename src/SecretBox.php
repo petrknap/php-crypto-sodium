@@ -35,7 +35,7 @@ class SecretBox implements KeyGenerator, DataEraser
         string $message,
         #[SensitiveParameter]
         string &$key,
-        ?string $nonce = null,
+        string|null $nonce = null,
     ): CiphertextWithNonce {
         return $this->wrapEncryption(static function (string $message, string $nonce) use (&$key): string {
             return sodium_crypto_secretbox($message, $nonce, $key);
@@ -49,7 +49,7 @@ class SecretBox implements KeyGenerator, DataEraser
         CiphertextWithNonce|string $ciphertext,
         #[SensitiveParameter]
         string &$key,
-        ?string $nonce = null,
+        string|null $nonce = null,
     ): string {
         return $this->wrapDecryption(static function (string $ciphertext, string $nonce) use (&$key): string {
             return OptionalString::ofFalsable(sodium_crypto_secretbox_open($ciphertext, $nonce, $key))->orElseThrow(

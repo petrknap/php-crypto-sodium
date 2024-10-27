@@ -23,7 +23,7 @@ trait CryptoSodiumTrait
     private function wrapEncryption(
         callable $encrypt,
         string $message,
-        ?string $nonce,
+        string|null $nonce,
         int $nonceBytes,
     ): CiphertextWithNonce {
         try {
@@ -49,7 +49,7 @@ trait CryptoSodiumTrait
     private function wrapDecryption(
         callable $decrypt,
         CiphertextWithNonce|string $ciphertext,
-        ?string $nonce,
+        string|null $nonce,
         int $nonceBytes,
     ): string {
         try {
@@ -82,13 +82,13 @@ trait CryptoSodiumTrait
     /**
      * @template TOutput of PushStream|string
      *
-     * @param callable(string, ?int): TOutput $push message with tag
+     * @param callable(string, int|null): TOutput $push message with tag
      *
      * @return TOutput
      *
      * @throws Exception\CouldNotEncryptData
      */
-    private function wrapPush(callable $push, MessageWithTag|string $message, ?int $tag): PushStream|string
+    private function wrapPush(callable $push, MessageWithTag|string $message, int|null $tag): PushStream|string
     {
         try {
             if ($message instanceof MessageWithTag) {

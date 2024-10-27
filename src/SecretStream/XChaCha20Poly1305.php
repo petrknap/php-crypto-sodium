@@ -75,10 +75,10 @@ class XChaCha20Poly1305 implements HeadedCipher, KeyGenerator, DataEraser
     public function push(
         PushStream &$stream,
         MessageWithTag|string $message,
-        ?int $tag = null,
-        ?string $additionalData = null,
+        int|null $tag = null,
+        string|null $additionalData = null,
     ): string {
-        return $this->wrapPush(function (string $message, ?int $tag) use (&$stream, $additionalData): string {
+        return $this->wrapPush(function (string $message, int|null $tag) use (&$stream, $additionalData): string {
             $tag ??= self::DEFAULT_TAG;
             $additionalData ??= '';
             $ciphertext = sodium_crypto_secretstream_xchacha20poly1305_push($stream->state, $message, $additionalData, $tag);
@@ -113,7 +113,7 @@ class XChaCha20Poly1305 implements HeadedCipher, KeyGenerator, DataEraser
     public function pull(
         PullStream &$stream,
         string $ciphertext,
-        ?string $additionalData = null,
+        string|null $additionalData = null,
     ): MessageWithTag {
         return $this->wrapPull(function (string $ciphertext) use (&$stream, $additionalData): MessageWithTag {
             /**

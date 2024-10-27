@@ -23,7 +23,7 @@ final class PullStream extends Stream
     /**
      * @throws Exception\CouldNotDecryptData
      */
-    public function pull(string $ciphertext, ?string $additionalData = null): MessageWithTag
+    public function pull(string $ciphertext, string|null $additionalData = null): MessageWithTag
     {
         return $this->instance->pull(
             $this,

@@ -64,7 +64,7 @@ trait CryptoSodiumTrait
             } else {
                 if (is_string($ciphertext)) {
                     $ciphertextWithNonce = CiphertextWithNonce::fromBinary(
-                        ciphertext: $ciphertext,
+                        ciphertextWithNonce: $ciphertext,
                         nonceBytes: $nonceBytes,
                     );
                 } else {

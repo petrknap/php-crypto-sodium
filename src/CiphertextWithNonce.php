@@ -21,9 +21,9 @@ final class CiphertextWithNonce implements BinariableInterface
     /**
      * @internal there is no reason to call it from the outside
      */
-    public static function fromBinary(string $ciphertext, int $nonceBytes): self
+    public static function fromBinary(string $ciphertextWithNonce, int $nonceBytes): self
     {
-        [$nonce, $ciphertext] = (new Byter())->bite($ciphertext, $nonceBytes);
+        [$nonce, $ciphertext] = (new Byter())->bite($ciphertextWithNonce, $nonceBytes);
         return new self(
             ciphertext: $ciphertext,
             nonce: $nonce,

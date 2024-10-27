@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace PetrKnap\CryptoSodium;
 
 use PetrKnap\Optional\OptionalString;
+use PetrKnap\Shorts\HasRequirements;
 use SensitiveParameter;
 
-/**
- * @see sodium_crypto_secretbox()
- */
 /* final */class SecretBox implements KeyGenerator, DataEraser
 {
+    use HasRequirements;
     use CryptoSodiumTrait;
 
     /**
@@ -22,6 +21,20 @@ use SensitiveParameter;
     public const HEADER_BYTES = self::NONCE_BYTES;
 
     private const NONCE_BYTES = SODIUM_CRYPTO_SECRETBOX_NONCEBYTES;
+
+    public function __construct()
+    {
+        self::checkRequirements(
+            functions: [
+                'sodium_crypto_secretbox_keygen',
+                'sodium_crypto_secretbox',
+                'sodium_crypto_secretbox_open',
+            ],
+            constants: [
+                'SODIUM_CRYPTO_SECRETBOX_NONCEBYTES',
+            ],
+        );
+    }
 
     public function generateKey(): string
     {

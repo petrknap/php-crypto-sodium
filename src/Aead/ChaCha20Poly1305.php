@@ -10,13 +10,12 @@ use PetrKnap\CryptoSodium\DataEraser;
 use PetrKnap\CryptoSodium\Exception;
 use PetrKnap\CryptoSodium\KeyGenerator;
 use PetrKnap\Optional\OptionalString;
+use PetrKnap\Shorts\HasRequirements;
 use SensitiveParameter;
 
-/**
- * @see sodium_crypto_aead_chacha20poly1305_encrypt()
- */
 /* final */class ChaCha20Poly1305 implements KeyGenerator, DataEraser
 {
+    use HasRequirements;
     use CryptoSodiumTrait;
 
     /**
@@ -27,6 +26,20 @@ use SensitiveParameter;
     public const HEADER_BYTES = self::NONCE_BYTES;
 
     private const NONCE_BYTES = SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_NPUBBYTES;
+
+    public function __construct()
+    {
+        self::checkRequirements(
+            functions: [
+                'sodium_crypto_aead_chacha20poly1305_keygen',
+                'sodium_crypto_aead_chacha20poly1305_encrypt',
+                'sodium_crypto_aead_chacha20poly1305_decrypt',
+            ],
+            constants: [
+                'SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_NPUBBYTES',
+            ],
+        );
+    }
 
     public function generateKey(): string
     {

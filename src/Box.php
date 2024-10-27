@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace PetrKnap\CryptoSodium;
 
 use PetrKnap\Optional\OptionalString;
+use PetrKnap\Shorts\HasRequirements;
 use SensitiveParameter;
 use Throwable;
 
-/**
- * @see sodium_crypto_box()
- */
 /* final */class Box implements KeyPairGenerator, KeyPairExtractor, DataEraser
 {
+    use HasRequirements;
     use CryptoSodiumTrait;
 
     /**
@@ -23,6 +22,24 @@ use Throwable;
     public const HEADER_BYTES = self::NONCE_BYTES;
 
     private const NONCE_BYTES = SODIUM_CRYPTO_BOX_NONCEBYTES;
+
+    public function __construct()
+    {
+        self::checkRequirements(
+            functions: [
+                'sodium_crypto_box_keypair_from_secretkey_and_publickey',
+                'sodium_crypto_box_seed_keypair',
+                'sodium_crypto_box_keypair',
+                'sodium_crypto_box_secretkey',
+                'sodium_crypto_box_publickey',
+                'sodium_crypto_box',
+                'sodium_crypto_box_open',
+            ],
+            constants: [
+                'SODIUM_CRYPTO_BOX_NONCEBYTES',
+            ],
+        );
+    }
 
     public function generateKeyPair(
         #[SensitiveParameter]

@@ -11,13 +11,12 @@ use PetrKnap\CryptoSodium\Exception;
 use PetrKnap\CryptoSodium\KeyGenerator;
 use PetrKnap\Optional\OptionalString;
 use PetrKnap\Shorts\Exception\MissingRequirement;
+use PetrKnap\Shorts\HasRequirements;
 use SensitiveParameter;
 
-/**
- * @see sodium_crypto_aead_aes256gcm_encrypt()
- */
 /* final */class Aes256Gcm implements KeyGenerator, DataEraser
 {
+    use HasRequirements;
     use CryptoSodiumTrait;
 
     /**
@@ -31,6 +30,18 @@ use SensitiveParameter;
 
     public function __construct()
     {
+        self::checkRequirements(
+            functions: [
+                'sodium_crypto_aead_aes256gcm_is_available',
+                'sodium_crypto_aead_aes256gcm_keygen',
+                'sodium_crypto_aead_aes256gcm_encrypt',
+                'sodium_crypto_aead_aes256gcm_decrypt',
+            ],
+            constants: [
+                'SODIUM_CRYPTO_AEAD_AES256GCM_NPUBBYTES',
+            ],
+        );
+
         if (!sodium_crypto_aead_aes256gcm_is_available()) {
             throw new MissingRequirement(self::class, 'available', 'aes256gcm');
         }

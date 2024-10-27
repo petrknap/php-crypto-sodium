@@ -16,14 +16,13 @@ use PetrKnap\CryptoSodium\PullStream;
 use PetrKnap\CryptoSodium\PushStream;
 use PetrKnap\CryptoSodium\Stream;
 use PetrKnap\Optional\OptionalArray;
+use PetrKnap\Shorts\HasRequirements;
 use SensitiveParameter;
 use Throwable;
 
-/**
- * @see sodium_crypto_secretstream_xchacha20poly1305_init_push()
- */
 /* final */class XChaCha20Poly1305 implements HeadedCipher, KeyGenerator, DataEraser
 {
+    use HasRequirements;
     use CryptoSodiumTrait;
 
     /**
@@ -39,6 +38,26 @@ use Throwable;
     public const TAG_FINAL = SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_FINAL;
     /** @internal there is no reason to use it from the outside */
     public const DEFAULT_TAG = self::TAG_MESSAGE;
+
+    public function __construct()
+    {
+        self::checkRequirements(
+            functions: [
+                'sodium_crypto_secretstream_xchacha20poly1305_keygen',
+                'sodium_crypto_secretstream_xchacha20poly1305_init_push',
+                'sodium_crypto_secretstream_xchacha20poly1305_push',
+                'sodium_crypto_secretstream_xchacha20poly1305_init_pull',
+                'sodium_crypto_secretstream_xchacha20poly1305_pull',
+            ],
+            constants: [
+                'SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_HEADERBYTES',
+                'SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_MESSAGE',
+                'SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_REKEY',
+                'SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_PUSH',
+                'SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_FINAL',
+            ],
+        );
+    }
 
     public function getHeaderSize(): int
     {

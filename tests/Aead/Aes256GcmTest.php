@@ -24,7 +24,7 @@ final class Aes256GcmTest extends CryptoSodiumTestCase
         ];
         $this->decryptArgsSet = [
             [$this->ciphertextWithNonce, $key, null, $additionalData],
-            [$this->ciphertextWithNonce->toString(), $key, null, $additionalData],
+            [$this->ciphertextWithNonce->toBinary(), $key, null, $additionalData],
             [$this->ciphertextWithNonce->ciphertext, $key, $this->ciphertextWithNonce->nonce, $additionalData],
         ];
     }

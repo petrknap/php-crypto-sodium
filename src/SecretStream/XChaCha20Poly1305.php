@@ -99,8 +99,7 @@ use Throwable;
     ): string {
         return $this->wrapPush(function (string $message, int|null $tag) use (&$stream, $additionalData): string {
             $tag ??= self::DEFAULT_TAG;
-            $additionalData ??= '';
-            $ciphertext = sodium_crypto_secretstream_xchacha20poly1305_push($stream->state, $message, $additionalData, $tag);
+            $ciphertext = sodium_crypto_secretstream_xchacha20poly1305_push($stream->state, $message, $additionalData ?? '', $tag);
             $this->updateStream($stream, $tag);
             return $ciphertext;
         }, $message, $tag);

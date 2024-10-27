@@ -57,8 +57,7 @@ use SensitiveParameter;
         string|null $additionalData = null,
     ): CiphertextWithNonce {
         return $this->wrapEncryption(static function (string $message, string $nonce) use (&$key, $additionalData): string {
-            $additionalData ??= '';
-            return sodium_crypto_aead_chacha20poly1305_encrypt($message, $additionalData, $nonce, $key);
+            return sodium_crypto_aead_chacha20poly1305_encrypt($message, $additionalData ?? '', $nonce, $key);
         }, $message, $nonce, self::NONCE_BYTES);
     }
 

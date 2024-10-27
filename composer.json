@@ -50,7 +50,7 @@
     "php": ">=8.1",
     "ext-mbstring": "*",
     "ext-sodium": "*",
-    "petrknap/binary": "^4.0",
+    "petrknap/binary": "^4.1",
     "petrknap/shorts": "^2.1"
   },
   "require-dev": {

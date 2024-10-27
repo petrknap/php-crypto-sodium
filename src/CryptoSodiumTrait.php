@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PetrKnap\CryptoSodium;
 
 use InvalidArgumentException;
+use PetrKnap\Binary\Binary;
 use SensitiveParameter;
 use Throwable;
 
@@ -74,7 +75,7 @@ trait CryptoSodiumTrait
         } catch (Exception\CouldNotDecryptData $exception) {
             throw $exception;
         } catch (Throwable $reason) {
-            throw new Exception\CouldNotDecryptData(__METHOD__, (string) $ciphertext, $reason);
+            throw new Exception\CouldNotDecryptData(__METHOD__, Binary::asBinary($ciphertext), $reason);
         }
     }
 
@@ -101,7 +102,7 @@ trait CryptoSodiumTrait
         } catch (Exception\CouldNotEncryptData $exception) {
             throw $exception;
         } catch (Throwable $reason) {
-            throw new Exception\CouldNotEncryptData(__METHOD__, (string) $message, $reason);
+            throw new Exception\CouldNotEncryptData(__METHOD__, Binary::asBinary($message), $reason);
         }
     }
 

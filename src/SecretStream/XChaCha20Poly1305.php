@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PetrKnap\CryptoSodium\SecretStream;
 
+use PetrKnap\Binary\Binary;
 use PetrKnap\CryptoSodium\CryptoSodiumInterface;
 use PetrKnap\CryptoSodium\CryptoSodiumTrait;
 use PetrKnap\CryptoSodium\DataEraser;
@@ -91,7 +92,7 @@ class XChaCha20Poly1305 implements KeyGenerator, DataEraser
                 state: $state,
                 aBytes: SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_ABYTES,
             );
-        }, (string) $header);
+        }, Binary::asBinary($header));
     }
 
     /**

@@ -1,4 +1,4 @@
-FROM php:8.1-cli
+FROM php:8.4-rc-cli
 
 # region included composer
 # hadolint ignore=DL3008

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PetrKnap\CryptoSodium;
 
+use PetrKnap\Optional\OptionalString;
 use SensitiveParameter;
 use Throwable;
 
@@ -87,11 +88,9 @@ class Box implements KeyPairGenerator, KeyPairExtractor, DataEraser
         ?string $nonce = null,
     ): string {
         return $this->wrapDecryption(static function (string $ciphertext, string $nonce) use (&$keyPair): string {
-            $message = sodium_crypto_box_open($ciphertext, $nonce, $keyPair);
-            if ($message === false) {
-                throw new Exception\CouldNotDecryptData('sodium_crypto_box_open', $ciphertext);
-            }
-            return $message;
+            return OptionalString::ofFalsable(sodium_crypto_box_open($ciphertext, $nonce, $keyPair))->orElseThrow(
+                static fn () => new Exception\CouldNotDecryptData('sodium_crypto_box_open', $ciphertext),
+            );
         }, $ciphertext, $nonce, self::NONCE_BYTES);
     }
 }

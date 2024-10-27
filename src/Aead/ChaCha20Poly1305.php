@@ -9,6 +9,7 @@ use PetrKnap\CryptoSodium\CryptoSodiumTrait;
 use PetrKnap\CryptoSodium\DataEraser;
 use PetrKnap\CryptoSodium\Exception;
 use PetrKnap\CryptoSodium\KeyGenerator;
+use PetrKnap\Optional\OptionalString;
 use SensitiveParameter;
 
 /**
@@ -59,12 +60,9 @@ class ChaCha20Poly1305 implements KeyGenerator, DataEraser
         ?string $additionalData = null,
     ): string {
         return $this->wrapDecryption(static function (string $ciphertext, string $nonce) use (&$key, $additionalData): string {
-            $additionalData ??= '';
-            $message = sodium_crypto_aead_chacha20poly1305_decrypt($ciphertext, $additionalData, $nonce, $key);
-            if ($message === false) {
-                throw new Exception\CouldNotDecryptData('sodium_crypto_aead_chacha20poly1305_decrypt', $ciphertext);
-            }
-            return $message;
+            return OptionalString::ofFalsable(sodium_crypto_aead_chacha20poly1305_decrypt($ciphertext, $additionalData ?? '', $nonce, $key))->orElseThrow(
+                static fn () => new Exception\CouldNotDecryptData('sodium_crypto_aead_chacha20poly1305_decrypt', $ciphertext),
+            );
         }, $ciphertext, $nonce, self::NONCE_BYTES);
     }
 }

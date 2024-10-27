@@ -9,6 +9,7 @@ use PetrKnap\CryptoSodium\CryptoSodiumTrait;
 use PetrKnap\CryptoSodium\DataEraser;
 use PetrKnap\CryptoSodium\Exception;
 use PetrKnap\CryptoSodium\KeyGenerator;
+use PetrKnap\Optional\OptionalString;
 use PetrKnap\Shorts\Exception\MissingRequirement;
 use SensitiveParameter;
 
@@ -67,12 +68,9 @@ class Aes256Gcm implements KeyGenerator, DataEraser
         ?string $additionalData = null,
     ): string {
         return $this->wrapDecryption(static function (string $ciphertext, string $nonce) use (&$key, $additionalData): string {
-            $additionalData ??= '';
-            $message = sodium_crypto_aead_aes256gcm_decrypt($ciphertext, $additionalData, $nonce, $key);
-            if ($message === false) {
-                throw new Exception\CouldNotDecryptData('sodium_crypto_aead_aes256gcm_decrypt', $ciphertext);
-            }
-            return $message;
+            return OptionalString::ofFalsable(sodium_crypto_aead_aes256gcm_decrypt($ciphertext, $additionalData ?? '', $nonce, $key))->orElseThrow(
+                static fn () => new Exception\CouldNotDecryptData('sodium_crypto_aead_aes256gcm_decrypt', $ciphertext),
+            );
         }, $ciphertext, $nonce, self::NONCE_BYTES);
     }
 }

@@ -51,6 +51,7 @@
     "ext-mbstring": "*",
     "ext-sodium": "*",
     "petrknap/binary": "^4.1",
+    "petrknap/optional": "^3.1",
     "petrknap/shorts": "^2.1"
   },
   "require-dev": {

@@ -15,6 +15,7 @@ use PetrKnap\CryptoSodium\MessageWithTag;
 use PetrKnap\CryptoSodium\PullStream;
 use PetrKnap\CryptoSodium\PushStream;
 use PetrKnap\CryptoSodium\Stream;
+use PetrKnap\Optional\OptionalArray;
 use SensitiveParameter;
 use Throwable;
 
@@ -115,12 +116,13 @@ class XChaCha20Poly1305 implements HeadedCipher, KeyGenerator, DataEraser
         ?string $additionalData = null,
     ): MessageWithTag {
         return $this->wrapPull(function (string $ciphertext) use (&$stream, $additionalData): MessageWithTag {
-            $additionalData ??= '';
-            $messageAndTag = sodium_crypto_secretstream_xchacha20poly1305_pull($stream->state, $ciphertext, $additionalData);
-            if ($messageAndTag === false) {
-                throw new Exception\CouldNotDecryptData('sodium_crypto_secretstream_xchacha20poly1305_pull', $ciphertext);
-            }
-            [$message, $tag] = $messageAndTag;
+            /**
+             * @var string $message
+             * @var int $tag
+             */
+            [$message, $tag] = OptionalArray::ofFalsable(sodium_crypto_secretstream_xchacha20poly1305_pull($stream->state, $ciphertext, $additionalData ?? ''))->orElseThrow(
+                static fn () => new Exception\CouldNotDecryptData('sodium_crypto_secretstream_xchacha20poly1305_pull', $ciphertext),
+            );
             $this->updateStream($stream, $tag);
             return new MessageWithTag(
                 message: $message,

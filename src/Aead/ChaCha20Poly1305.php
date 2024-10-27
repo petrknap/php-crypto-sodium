@@ -18,7 +18,14 @@ class ChaCha20Poly1305 implements KeyGenerator, DataEraser
 {
     use CryptoSodiumTrait;
 
-    public const HEADER_BYTES = SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_NPUBBYTES;
+    /**
+     * @deprecated
+     *
+     * @todo remove it
+     */
+    public const HEADER_BYTES = self::NONCE_BYTES;
+
+    private const NONCE_BYTES = SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_NPUBBYTES;
 
     public function generateKey(): string
     {
@@ -38,7 +45,7 @@ class ChaCha20Poly1305 implements KeyGenerator, DataEraser
         return $this->wrapEncryption(static function (string $message, string $nonce) use (&$key, $additionalData): string {
             $additionalData ??= '';
             return sodium_crypto_aead_chacha20poly1305_encrypt($message, $additionalData, $nonce, $key);
-        }, $message, $nonce, self::HEADER_BYTES);
+        }, $message, $nonce, self::NONCE_BYTES);
     }
 
     /**
@@ -58,6 +65,6 @@ class ChaCha20Poly1305 implements KeyGenerator, DataEraser
                 throw new Exception\CouldNotDecryptData('sodium_crypto_aead_chacha20poly1305_decrypt', $ciphertext);
             }
             return $message;
-        }, $ciphertext, $nonce, self::HEADER_BYTES);
+        }, $ciphertext, $nonce, self::NONCE_BYTES);
     }
 }

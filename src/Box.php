@@ -14,7 +14,14 @@ class Box implements KeyPairGenerator, KeyPairExtractor, DataEraser
 {
     use CryptoSodiumTrait;
 
-    public const HEADER_BYTES = SODIUM_CRYPTO_BOX_NONCEBYTES;
+    /**
+     * @deprecated
+     *
+     * @todo remove it
+     */
+    public const HEADER_BYTES = self::NONCE_BYTES;
+
+    private const NONCE_BYTES = SODIUM_CRYPTO_BOX_NONCEBYTES;
 
     public function generateKeyPair(
         #[SensitiveParameter]
@@ -67,7 +74,7 @@ class Box implements KeyPairGenerator, KeyPairExtractor, DataEraser
     ): CiphertextWithNonce {
         return $this->wrapEncryption(static function (string $message, string $nonce) use (&$keyPair): string {
             return sodium_crypto_box($message, $nonce, $keyPair);
-        }, $message, $nonce, self::HEADER_BYTES);
+        }, $message, $nonce, self::NONCE_BYTES);
     }
 
     /**
@@ -85,6 +92,6 @@ class Box implements KeyPairGenerator, KeyPairExtractor, DataEraser
                 throw new Exception\CouldNotDecryptData('sodium_crypto_box_open', $ciphertext);
             }
             return $message;
-        }, $ciphertext, $nonce, self::HEADER_BYTES);
+        }, $ciphertext, $nonce, self::NONCE_BYTES);
     }
 }

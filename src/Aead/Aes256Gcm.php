@@ -19,7 +19,14 @@ class Aes256Gcm implements KeyGenerator, DataEraser
 {
     use CryptoSodiumTrait;
 
-    public const HEADER_BYTES = SODIUM_CRYPTO_AEAD_AES256GCM_NPUBBYTES;
+    /**
+     * @deprecated
+     *
+     * @todo remove it
+     */
+    public const HEADER_BYTES = self::NONCE_BYTES;
+
+    private const NONCE_BYTES = SODIUM_CRYPTO_AEAD_AES256GCM_NPUBBYTES;
 
     public function __construct()
     {
@@ -46,7 +53,7 @@ class Aes256Gcm implements KeyGenerator, DataEraser
         return $this->wrapEncryption(static function (string $message, string $nonce) use (&$key, $additionalData): string {
             $additionalData ??= '';
             return sodium_crypto_aead_aes256gcm_encrypt($message, $additionalData, $nonce, $key);
-        }, $message, $nonce, self::HEADER_BYTES);
+        }, $message, $nonce, self::NONCE_BYTES);
     }
 
     /**
@@ -66,6 +73,6 @@ class Aes256Gcm implements KeyGenerator, DataEraser
                 throw new Exception\CouldNotDecryptData('sodium_crypto_aead_aes256gcm_decrypt', $ciphertext);
             }
             return $message;
-        }, $ciphertext, $nonce, self::HEADER_BYTES);
+        }, $ciphertext, $nonce, self::NONCE_BYTES);
     }
 }

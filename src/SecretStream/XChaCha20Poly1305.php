@@ -9,6 +9,7 @@ use PetrKnap\CryptoSodium\CryptoSodiumInterface;
 use PetrKnap\CryptoSodium\CryptoSodiumTrait;
 use PetrKnap\CryptoSodium\DataEraser;
 use PetrKnap\CryptoSodium\Exception;
+use PetrKnap\CryptoSodium\HeadedCipher;
 use PetrKnap\CryptoSodium\KeyGenerator;
 use PetrKnap\CryptoSodium\MessageWithTag;
 use PetrKnap\CryptoSodium\PullStream;
@@ -20,10 +21,15 @@ use Throwable;
 /**
  * @see sodium_crypto_secretstream_xchacha20poly1305_init_push()
  */
-class XChaCha20Poly1305 implements KeyGenerator, DataEraser
+class XChaCha20Poly1305 implements HeadedCipher, KeyGenerator, DataEraser
 {
     use CryptoSodiumTrait;
 
+    /**
+     * @deprecated use {@see self::getHeaderSize()}
+     *
+     * @todo remove it
+     */
     public const HEADER_BYTES = SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_HEADERBYTES;
     public const TAG_MESSAGE = SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_MESSAGE;
     /** @link https://doc.libsodium.org/secret-key_cryptography/secretstream#rekeying */
@@ -32,6 +38,11 @@ class XChaCha20Poly1305 implements KeyGenerator, DataEraser
     public const TAG_FINAL = SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_FINAL;
     /** @internal there is no reason to use it from the outside */
     public const DEFAULT_TAG = self::TAG_MESSAGE;
+
+    public function getHeaderSize(): int
+    {
+        return self::HEADER_BYTES;
+    }
 
     public function generateKey(): string
     {

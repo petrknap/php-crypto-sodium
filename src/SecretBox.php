@@ -10,7 +10,7 @@ use SensitiveParameter;
 /**
  * @see sodium_crypto_secretbox()
  */
-class SecretBox implements KeyGenerator, DataEraser
+/* final */class SecretBox implements KeyGenerator, DataEraser
 {
     use CryptoSodiumTrait;
 

@@ -16,7 +16,7 @@ use SensitiveParameter;
 /**
  * @see sodium_crypto_aead_aes256gcm_encrypt()
  */
-class Aes256Gcm implements KeyGenerator, DataEraser
+/* final */class Aes256Gcm implements KeyGenerator, DataEraser
 {
     use CryptoSodiumTrait;
 

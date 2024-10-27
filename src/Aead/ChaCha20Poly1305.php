@@ -15,7 +15,7 @@ use SensitiveParameter;
 /**
  * @see sodium_crypto_aead_chacha20poly1305_encrypt()
  */
-class ChaCha20Poly1305 implements KeyGenerator, DataEraser
+/* final */class ChaCha20Poly1305 implements KeyGenerator, DataEraser
 {
     use CryptoSodiumTrait;
 

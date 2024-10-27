@@ -11,7 +11,7 @@ use Throwable;
 /**
  * @see sodium_crypto_box()
  */
-class Box implements KeyPairGenerator, KeyPairExtractor, DataEraser
+/* final */class Box implements KeyPairGenerator, KeyPairExtractor, DataEraser
 {
     use CryptoSodiumTrait;
 

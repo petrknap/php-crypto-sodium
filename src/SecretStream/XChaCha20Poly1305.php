@@ -22,7 +22,7 @@ use Throwable;
 /**
  * @see sodium_crypto_secretstream_xchacha20poly1305_init_push()
  */
-class XChaCha20Poly1305 implements HeadedCipher, KeyGenerator, DataEraser
+/* final */class XChaCha20Poly1305 implements HeadedCipher, KeyGenerator, DataEraser
 {
     use CryptoSodiumTrait;
 

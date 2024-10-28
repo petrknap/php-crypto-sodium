@@ -19,9 +19,7 @@ use Throwable;
      *
      * @todo remove it
      */
-    public const HEADER_BYTES = self::NONCE_BYTES;
-
-    private const NONCE_BYTES = SODIUM_CRYPTO_BOX_NONCEBYTES;
+    public const HEADER_BYTES = SODIUM_CRYPTO_BOX_NONCEBYTES;
 
     public function __construct()
     {
@@ -92,7 +90,7 @@ use Throwable;
     ): CiphertextWithNonce {
         return $this->wrapEncryption(static function (string $message, string $nonce) use (&$keyPair): string {
             return sodium_crypto_box($message, $nonce, $keyPair);
-        }, $message, $nonce, self::NONCE_BYTES);
+        }, $message, $nonce, SODIUM_CRYPTO_BOX_NONCEBYTES);
     }
 
     /**
@@ -108,6 +106,6 @@ use Throwable;
             return OptionalString::ofFalsable(sodium_crypto_box_open($ciphertext, $nonce, $keyPair))->orElseThrow(
                 static fn () => new Exception\CouldNotDecryptData('sodium_crypto_box_open', $ciphertext),
             );
-        }, $ciphertext, $nonce, self::NONCE_BYTES);
+        }, $ciphertext, $nonce, SODIUM_CRYPTO_BOX_NONCEBYTES);
     }
 }

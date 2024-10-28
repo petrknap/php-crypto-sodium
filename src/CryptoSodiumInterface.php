@@ -44,7 +44,7 @@ interface CryptoSodiumInterface
     public function push(
         PushStream &$stream,
         MessageWithTag|string $message,
-        int|null $tag = null,
+        StreamTag|null $tag = null,
     ): string;
 
     /**

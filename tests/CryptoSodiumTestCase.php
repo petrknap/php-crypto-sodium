@@ -61,7 +61,7 @@ abstract class CryptoSodiumTestCase extends TestCase
         foreach ($this->pushArgsSet as $pushArgs) {
             $message = $pushArgs[0];
             if (is_string($message)) {
-                $tag = $pushArgs[1] ?? constant($this->instance::class . '::DEFAULT_TAG');
+                $tag = $pushArgs[1] ?? StreamTag::default($this->instance::class);
                 $message = new MessageWithTag($message, $tag);
             }
             $messages[] = $message;

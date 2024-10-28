@@ -43,6 +43,7 @@ $box->eraseData($keyPair);
 
 ```php
 use PetrKnap\CryptoSodium\SecretStream\XChaCha20Poly1305;
+use PetrKnap\CryptoSodium\StreamTag;
 
 $xChaCha20Poly1305 = new XChaCha20Poly1305();
 $messageChunk1 = 'Hello ';
@@ -52,7 +53,7 @@ $key = $xChaCha20Poly1305->generateKey();
 $pushStream = $xChaCha20Poly1305->initPush($key);
 $ciphertextHeader = $pushStream->header;
 $ciphertextChunk1 = $pushStream->push($messageChunk1);
-$ciphertextChunk2 = $pushStream->push($messageChunk2, tag: XChaCha20Poly1305::TAG_FINAL);
+$ciphertextChunk2 = $pushStream->push($messageChunk2, tag: StreamTag::Final);
 
 $pullStream = $xChaCha20Poly1305->initPull($ciphertextHeader, $key);
 echo $pullStream->pull($ciphertextChunk1);

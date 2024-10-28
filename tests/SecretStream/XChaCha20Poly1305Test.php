@@ -6,6 +6,7 @@ namespace PetrKnap\CryptoSodium\SecretStream;
 
 use PetrKnap\CryptoSodium\CryptoSodiumTestCase;
 use PetrKnap\CryptoSodium\MessageWithTag;
+use PetrKnap\CryptoSodium\StreamTag;
 
 final class XChaCha20Poly1305Test extends CryptoSodiumTestCase
 {
@@ -17,13 +18,13 @@ final class XChaCha20Poly1305Test extends CryptoSodiumTestCase
         $additionalData = random_bytes(1);
         $this->pushArgsSet = [
             [self::MESSAGE, null, null],
-            [self::MESSAGE, XChaCha20Poly1305::TAG_PUSH, null],
+            [self::MESSAGE, StreamTag::Push, null],
             [self::MESSAGE, null, $additionalData],
-            [self::MESSAGE, XChaCha20Poly1305::TAG_PUSH, $additionalData],
-            [new MessageWithTag(self::MESSAGE, XChaCha20Poly1305::TAG_PUSH), null, $additionalData],
-            [new MessageWithTag(random_bytes(4096), XChaCha20Poly1305::TAG_MESSAGE)],
-            [new MessageWithTag(random_bytes(4096), XChaCha20Poly1305::TAG_REKEY)],
-            [new MessageWithTag(random_bytes(4096), XChaCha20Poly1305::TAG_FINAL)],
+            [self::MESSAGE, StreamTag::Push, $additionalData],
+            [new MessageWithTag(self::MESSAGE, StreamTag::Push), null, $additionalData],
+            [new MessageWithTag(random_bytes(4096), StreamTag::Message)],
+            [new MessageWithTag(random_bytes(4096), StreamTag::ReKey)],
+            [new MessageWithTag(random_bytes(4096), StreamTag::Final)],
         ];
     }
 }

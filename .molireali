@@ -1,6 +1,6 @@
 authors
 composer PetrKnap\\CryptoSodium
-dockerfile php 8.1-cli
+dockerfile php 8.4-rc-cli
 docker-scripts petrknap/php-crypto-sodium
 donation
 github-templates

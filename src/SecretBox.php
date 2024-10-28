@@ -18,9 +18,7 @@ use SensitiveParameter;
      *
      * @todo remove it
      */
-    public const HEADER_BYTES = self::NONCE_BYTES;
-
-    private const NONCE_BYTES = SODIUM_CRYPTO_SECRETBOX_NONCEBYTES;
+    public const HEADER_BYTES = SODIUM_CRYPTO_SECRETBOX_NONCEBYTES;
 
     public function __construct()
     {
@@ -52,7 +50,7 @@ use SensitiveParameter;
     ): CiphertextWithNonce {
         return $this->wrapEncryption(static function (string $message, string $nonce) use (&$key): string {
             return sodium_crypto_secretbox($message, $nonce, $key);
-        }, $message, $nonce, self::NONCE_BYTES);
+        }, $message, $nonce, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
     }
 
     /**
@@ -68,6 +66,6 @@ use SensitiveParameter;
             return OptionalString::ofFalsable(sodium_crypto_secretbox_open($ciphertext, $nonce, $key))->orElseThrow(
                 static fn () => new Exception\CouldNotDecryptData('sodium_crypto_secretbox_open', $ciphertext),
             );
-        }, $ciphertext, $nonce, self::NONCE_BYTES);
+        }, $ciphertext, $nonce, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
     }
 }

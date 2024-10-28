@@ -24,9 +24,7 @@ use SensitiveParameter;
      *
      * @todo remove it
      */
-    public const HEADER_BYTES = self::NONCE_BYTES;
-
-    private const NONCE_BYTES = SODIUM_CRYPTO_AEAD_AES256GCM_NPUBBYTES;
+    public const HEADER_BYTES = SODIUM_CRYPTO_AEAD_AES256GCM_NPUBBYTES;
 
     public function __construct()
     {
@@ -64,7 +62,7 @@ use SensitiveParameter;
     ): CiphertextWithNonce {
         return $this->wrapEncryption(static function (string $message, string $nonce) use (&$key, $additionalData): string {
             return sodium_crypto_aead_aes256gcm_encrypt($message, $additionalData ?? '', $nonce, $key);
-        }, $message, $nonce, self::NONCE_BYTES);
+        }, $message, $nonce, SODIUM_CRYPTO_AEAD_AES256GCM_NPUBBYTES);
     }
 
     /**
@@ -81,6 +79,6 @@ use SensitiveParameter;
             return OptionalString::ofFalsable(sodium_crypto_aead_aes256gcm_decrypt($ciphertext, $additionalData ?? '', $nonce, $key))->orElseThrow(
                 static fn () => new Exception\CouldNotDecryptData('sodium_crypto_aead_aes256gcm_decrypt', $ciphertext),
             );
-        }, $ciphertext, $nonce, self::NONCE_BYTES);
+        }, $ciphertext, $nonce, SODIUM_CRYPTO_AEAD_AES256GCM_NPUBBYTES);
     }
 }

@@ -31,12 +31,29 @@ use Throwable;
      * @todo remove it
      */
     public const HEADER_BYTES = SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_HEADERBYTES;
+    /**
+     * @todo replace it by Tag enum
+     */
     public const TAG_MESSAGE = SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_MESSAGE;
-    /** @link https://doc.libsodium.org/secret-key_cryptography/secretstream#rekeying */
+    /**
+     * @link https://doc.libsodium.org/secret-key_cryptography/secretstream#rekeying
+     *
+     * @todo replace it by Tag enum
+     */
     public const TAG_REKEY = SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_REKEY;
+    /**
+     * @todo replace it by Tag enum
+     */
     public const TAG_PUSH = SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_PUSH;
+    /**
+     * @todo replace it by Tag enum
+     */
     public const TAG_FINAL = SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_FINAL;
-    /** @internal there is no reason to use it from the outside */
+    /**
+     * @internal there is no reason to use it from the outside
+     *
+     * @todo replace it by Tag enum
+     */
     public const DEFAULT_TAG = self::TAG_MESSAGE;
 
     public function __construct()
@@ -61,7 +78,7 @@ use Throwable;
 
     public function getHeaderSize(): int
     {
-        return self::HEADER_BYTES;
+        return SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_HEADERBYTES;
     }
 
     public function generateKey(): string

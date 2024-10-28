@@ -6,6 +6,7 @@ namespace PetrKnap\CryptoSodium;
 
 use InvalidArgumentException;
 use PetrKnap\Binary\Binary;
+use PetrKnap\Binary\Serializer\Exception\CouldNotUnserializeData;
 use SensitiveParameter;
 use Throwable;
 
@@ -63,10 +64,14 @@ trait CryptoSodiumTrait
                 );
             } else {
                 if (is_string($ciphertext)) {
-                    $ciphertextWithNonce = CiphertextWithNonce::fromBinary(
-                        ciphertextWithNonce: $ciphertext,
-                        nonceBytes: $nonceBytes,
-                    );
+                    try {
+                        $ciphertextWithNonce = CiphertextWithNonce::fromBinary($ciphertext);
+                    } catch (CouldNotUnserializeData) {
+                        $ciphertextWithNonce = CiphertextWithNonce::fromOldBinary(
+                            ciphertextWithNonce: $ciphertext,
+                            nonceBytes: $nonceBytes,
+                        );
+                    }
                 } else {
                     $ciphertextWithNonce = $ciphertext;
                 }

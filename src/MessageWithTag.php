@@ -13,7 +13,7 @@ final class MessageWithTag implements BinariableInterface
 
     public function __construct(
         public readonly string $message,
-        public readonly int $tag,
+        public readonly StreamTag $tag,
     ) {
     }
 

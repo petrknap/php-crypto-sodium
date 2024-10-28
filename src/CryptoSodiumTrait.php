@@ -82,13 +82,13 @@ trait CryptoSodiumTrait
     /**
      * @template TOutput of PushStream|string
      *
-     * @param callable(string, int|null): TOutput $push message with tag
+     * @param callable(string, StreamTag|null): TOutput $push message with tag
      *
      * @return TOutput
      *
      * @throws Exception\CouldNotEncryptData
      */
-    private function wrapPush(callable $push, MessageWithTag|string $message, int|null $tag): PushStream|string
+    private function wrapPush(callable $push, MessageWithTag|string $message, StreamTag|null $tag): PushStream|string
     {
         try {
             if ($message instanceof MessageWithTag) {

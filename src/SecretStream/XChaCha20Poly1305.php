@@ -15,6 +15,7 @@ use PetrKnap\CryptoSodium\MessageWithTag;
 use PetrKnap\CryptoSodium\PullStream;
 use PetrKnap\CryptoSodium\PushStream;
 use PetrKnap\CryptoSodium\Stream;
+use PetrKnap\CryptoSodium\StreamTag;
 use PetrKnap\Optional\OptionalArray;
 use PetrKnap\Shorts\HasRequirements;
 use SensitiveParameter;
@@ -31,30 +32,6 @@ use Throwable;
      * @todo remove it
      */
     public const HEADER_BYTES = SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_HEADERBYTES;
-    /**
-     * @todo replace it by Tag enum
-     */
-    public const TAG_MESSAGE = SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_MESSAGE;
-    /**
-     * @link https://doc.libsodium.org/secret-key_cryptography/secretstream#rekeying
-     *
-     * @todo replace it by Tag enum
-     */
-    public const TAG_REKEY = SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_REKEY;
-    /**
-     * @todo replace it by Tag enum
-     */
-    public const TAG_PUSH = SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_PUSH;
-    /**
-     * @todo replace it by Tag enum
-     */
-    public const TAG_FINAL = SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_FINAL;
-    /**
-     * @internal there is no reason to use it from the outside
-     *
-     * @todo replace it by Tag enum
-     */
-    public const DEFAULT_TAG = self::TAG_MESSAGE;
 
     public function __construct()
     {
@@ -68,12 +45,9 @@ use Throwable;
             ],
             constants: [
                 'SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_HEADERBYTES',
-                'SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_MESSAGE',
-                'SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_REKEY',
-                'SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_PUSH',
-                'SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_FINAL',
             ],
         );
+        StreamTag::checkRequirements(self::class);
     }
 
     public function getHeaderSize(): int
@@ -111,12 +85,12 @@ use Throwable;
     public function push(
         PushStream &$stream,
         MessageWithTag|string $message,
-        int|null $tag = null,
+        StreamTag|null $tag = null,
         string|null $additionalData = null,
     ): string {
-        return $this->wrapPush(function (string $message, int|null $tag) use (&$stream, $additionalData): string {
-            $tag ??= self::DEFAULT_TAG;
-            $ciphertext = sodium_crypto_secretstream_xchacha20poly1305_push($stream->state, $message, $additionalData ?? '', $tag);
+        return $this->wrapPush(function (string $message, StreamTag|null $tag) use (&$stream, $additionalData): string {
+            $tag ??= StreamTag::default(self::class);
+            $ciphertext = sodium_crypto_secretstream_xchacha20poly1305_push($stream->state, $message, $additionalData ?? '', $tag->toValue(self::class));
             $this->updateStream($stream, $tag);
             return $ciphertext;
         }, $message, $tag);
@@ -153,11 +127,12 @@ use Throwable;
         return $this->wrapPull(function (string $ciphertext) use (&$stream, $additionalData): MessageWithTag {
             /**
              * @var string $message
-             * @var int $tag
+             * @var int $tagValue
              */
-            [$message, $tag] = OptionalArray::ofFalsable(sodium_crypto_secretstream_xchacha20poly1305_pull($stream->state, $ciphertext, $additionalData ?? ''))->orElseThrow(
+            [$message, $tagValue] = OptionalArray::ofFalsable(sodium_crypto_secretstream_xchacha20poly1305_pull($stream->state, $ciphertext, $additionalData ?? ''))->orElseThrow(
                 static fn () => new Exception\CouldNotDecryptData('sodium_crypto_secretstream_xchacha20poly1305_pull', $ciphertext),
             );
+            $tag = StreamTag::fromValue(self::class, $tagValue);
             $this->updateStream($stream, $tag);
             return new MessageWithTag(
                 message: $message,
@@ -181,9 +156,9 @@ use Throwable;
 
     private function updateStream(
         Stream &$stream,
-        int $tag,
+        StreamTag $tag,
     ): void {
-        if ($tag == self::TAG_FINAL) {
+        if ($tag === StreamTag::Final) {
             $this->eraseData($stream->state);
         }
     }

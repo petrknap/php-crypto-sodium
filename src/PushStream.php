@@ -27,7 +27,7 @@ final class PushStream extends Stream implements BinariableInterface
     /**
      * @throws Exception\CouldNotEncryptData
      */
-    public function push(MessageWithTag|string $message, int|null $tag = null, string|null $additionalData = null): string
+    public function push(MessageWithTag|string $message, StreamTag|null $tag = null, string|null $additionalData = null): string
     {
         return $this->instance->push(
             $this,

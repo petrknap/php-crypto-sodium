@@ -29,6 +29,8 @@ final class CryptoSodiumInterfaceTest extends TestCase
     public static function dataIsImplementedByClass(): array
     {
         return [
+            Aead\Aegis128L::class => [Aead\Aegis128L::class],
+            Aead\Aegis256::class => [Aead\Aegis256::class],
             Aead\Aes256Gcm::class => [Aead\Aes256Gcm::class],
             Aead\ChaCha20Poly1305::class => [Aead\ChaCha20Poly1305::class],
             Box::class => [Box::class],

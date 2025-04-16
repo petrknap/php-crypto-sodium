@@ -45,7 +45,7 @@ interface CryptoSodiumInterface
         PushStream &$stream,
         MessageWithTag|string $message,
         int|null $tag = null,
-    ): string;
+    ): string; // @todo return Ciphertext
 
     /**
      * @throws Exception\CouldNotDecryptData
@@ -70,4 +70,22 @@ interface CryptoSodiumInterface
     public function rekey(
         Stream &$stream,
     ): void;
+
+    /**
+     * @throws Exception\CouldNotSignData
+     */
+    public function sign(
+        string $message,
+        #[SensitiveParameter]
+        string &$_,
+    ): string; // @todo return SignedMessage
+
+    /**
+     * @throws Exception\CouldNotVerifyData
+     */
+    public function verified(
+        string $signedMessage,
+        #[SensitiveParameter]
+        string &$_,
+    ): string;
 }

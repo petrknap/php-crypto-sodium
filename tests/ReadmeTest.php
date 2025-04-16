@@ -24,6 +24,7 @@ class ReadmeTest extends TestCase implements MarkdownFileTestInterface
             Box::class => 'Hello World!',
             SecretStream\XChaCha20Poly1305::class => 'Hello World!',
             Aead\Aes256Gcm::class => 'Hello World!',
+            Sign::class => 'Hello World!',
         ];
     }
 }

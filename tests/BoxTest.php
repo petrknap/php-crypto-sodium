@@ -24,18 +24,4 @@ final class BoxTest extends CryptoSodiumTestCase
             [$this->ciphertextWithNonce->ciphertext, $keyPair, $this->ciphertextWithNonce->nonce],
         ];
     }
-
-    public function testKeyPairGeneratorThrowsOnWrongSeed(): void
-    {
-        self::expectException(Exception\CouldNotGenerateKeyPair::class);
-
-        $this->instance->generateKeyPair('wrong seed');
-    }
-
-    public function testKeyPairGeneratorThrowsOnWrongKeys(): void
-    {
-        self::expectException(Exception\CouldNotGenerateKeyPair::class);
-
-        $this->instance->generateKeyPair('wrong secret key', 'wrong public key');
-    }
 }

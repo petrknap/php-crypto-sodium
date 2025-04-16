@@ -34,6 +34,7 @@ final class CryptoSodiumInterfaceTest extends TestCase
             Box::class => [Box::class],
             SecretBox::class => [SecretBox::class],
             SecretStream\XChaCha20Poly1305::class => [SecretStream\XChaCha20Poly1305::class],
+            Sign::class => [Sign::class],
         ];
     }
 }

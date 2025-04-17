@@ -80,30 +80,34 @@ use Throwable;
     }
 
     /**
+     * @param non-empty-string $encryptionKeyPair senders private key and recipients public key
+     *
      * @throws Exception\CouldNotEncryptData
      */
     public function encrypt(
         string $message,
         #[SensitiveParameter]
-        string &$keyPair,
+        string &$encryptionKeyPair,
         string|null $nonce = null,
     ): CiphertextWithNonce {
-        return $this->wrapEncryption(static function (string $message, string $nonce) use (&$keyPair): string {
-            return sodium_crypto_box($message, $nonce, $keyPair);
+        return $this->wrapEncryption(static function (string $message, string $nonce) use (&$encryptionKeyPair): string {
+            return sodium_crypto_box($message, $nonce, $encryptionKeyPair);
         }, $message, $nonce, SODIUM_CRYPTO_BOX_NONCEBYTES);
     }
 
     /**
+     * @param non-empty-string $decryptionKeyPair recipients private key and senders public key
+     *
      * @throws Exception\CouldNotDecryptData
      */
     public function decrypt(
         CiphertextWithNonce|string $ciphertext,
         #[SensitiveParameter]
-        string &$keyPair,
+        string &$decryptionKeyPair,
         string|null $nonce = null,
     ): string {
-        return $this->wrapDecryption(static function (string $ciphertext, string $nonce) use (&$keyPair): string {
-            return OptionalString::ofFalsable(sodium_crypto_box_open($ciphertext, $nonce, $keyPair))->orElseThrow(
+        return $this->wrapDecryption(static function (string $ciphertext, string $nonce) use (&$decryptionKeyPair): string {
+            return OptionalString::ofFalsable(sodium_crypto_box_open($ciphertext, $nonce, $decryptionKeyPair))->orElseThrow(
                 static fn () => new Exception\CouldNotDecryptData('sodium_crypto_box_open', $ciphertext),
             );
         }, $ciphertext, $nonce, SODIUM_CRYPTO_BOX_NONCEBYTES);

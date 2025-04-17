@@ -30,13 +30,25 @@ use PetrKnap\CryptoSodium\Box;
 
 $box = new Box();
 $message = 'Hello World!';
-$keyPair = $box->generateKeyPair();
+$sendersKeyPair = $box->generateKeyPair();
+$recipientsKeyPair = $box->generateKeyPair();
 
-$ciphertext = $box->encrypt($message, $keyPair);
+$encryptionKeyPair = $box->generateKeyPair(
+    $box->extractSecretKey($sendersKeyPair),
+    $box->extractPublicKey($recipientsKeyPair),
+);
+$ciphertext = $box->encrypt($message, $encryptionKeyPair);
+$box->eraseData($encryptionKeyPair);
 
-echo $box->decrypt($ciphertext, $keyPair);
+$decryptionKeyPair = $box->generateKeyPair(
+    $box->extractSecretKey($recipientsKeyPair),
+    $box->extractPublicKey($sendersKeyPair),
+);
+echo $box->decrypt($ciphertext, $decryptionKeyPair);
+$box->eraseData($decryptionKeyPair);
 
-$box->eraseData($keyPair);
+$box->eraseData($sendersKeyPair);
+$box->eraseData($recipientsKeyPair);
 ```
 
 ### Symmetric stream encryption

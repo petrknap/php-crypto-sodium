@@ -18,7 +18,7 @@ abstract class CryptoSodiumTestCase extends TestCase
     protected string $encrypted;
     protected string $decryptMethodName = 'decrypt';
     protected array $decryptArgsSet = [];
-    protected string $decrypted;
+    protected string|bool $decrypted;
     protected array $pushArgsSet = [];
 
     protected function setUp(): void

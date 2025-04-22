@@ -81,6 +81,15 @@ interface CryptoSodiumInterface
     ): string; // @todo return SignedMessage
 
     /**
+     * @throws Exception\CouldNotSignData
+     */
+    public function signDetached(
+        string $message,
+        #[SensitiveParameter]
+        string &$_,
+    ): string; // @todo return Signature
+
+    /**
      * @throws Exception\CouldNotVerifyData
      */
     public function verified(
@@ -88,4 +97,11 @@ interface CryptoSodiumInterface
         #[SensitiveParameter]
         string &$_,
     ): string;
+
+    public function verifyDetached(
+        string $signature,
+        string $message,
+        #[SensitiveParameter]
+        string &$_,
+    ): bool;
 }

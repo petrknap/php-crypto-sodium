@@ -15,6 +15,7 @@ final class XChaCha20Poly1305Test extends CryptoSodiumTestCase
 
         $this->instance = new XChaCha20Poly1305();
         $additionalData = random_bytes(1);
+
         $this->pushArgsSet = [
             [self::MESSAGE, null, null],
             [self::MESSAGE, XChaCha20Poly1305::TAG_PUSH, null],

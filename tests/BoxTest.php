@@ -9,19 +9,23 @@ final class BoxTest extends CryptoSodiumTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->instance = new Box();
         $keyPair = $this->instance->generateKeyPair(base64_decode('o8DJ9Tp7MT0nOjzzpnrjNQswHHJgwVKrtGgzwWlflaM='));
-        $this->ciphertextWithNonce = new CiphertextWithNonce(
+        $ciphertextWithNonce = new CiphertextWithNonce(
             ciphertext: base64_decode('B9845kOUP8d1kk9bQBWrvB7umkrgX7pgjIsXNb0='),
             nonce: base64_decode('mXVQMM6ud/69jDTsIGHTuNrktqcCebQR'),
         );
+
         $this->encryptArgsSet = [
-            [self::MESSAGE, $keyPair, $this->ciphertextWithNonce->nonce],
+            [self::MESSAGE, $keyPair, $ciphertextWithNonce->nonce],
         ];
+        $this->encrypted = $ciphertextWithNonce->toBinary();
+
         $this->decryptArgsSet = [
-            [$this->ciphertextWithNonce, $keyPair],
-            [$this->ciphertextWithNonce->toBinary(), $keyPair],
-            [$this->ciphertextWithNonce->ciphertext, $keyPair, $this->ciphertextWithNonce->nonce],
+            [$this->encrypted, $keyPair],
+            [$ciphertextWithNonce, $keyPair],
+            [$ciphertextWithNonce->ciphertext, $keyPair, $ciphertextWithNonce->nonce],
         ];
     }
 }

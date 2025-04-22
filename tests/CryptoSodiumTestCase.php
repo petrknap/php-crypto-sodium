@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PetrKnap\CryptoSodium;
 
+use PetrKnap\Binary\Binary;
 use PHPUnit\Framework\TestCase;
 
 abstract class CryptoSodiumTestCase extends TestCase
@@ -12,13 +13,20 @@ abstract class CryptoSodiumTestCase extends TestCase
 
     /** @var CryptoSodiumInterface|object */
     protected object $instance;
-    /** @todo replace it by string $encryptedMessage */
-    protected CiphertextWithNonce $ciphertextWithNonce;
     protected string $encryptMethodName = 'encrypt';
     protected array $encryptArgsSet = [];
+    protected string $encrypted;
     protected string $decryptMethodName = 'decrypt';
     protected array $decryptArgsSet = [];
+    protected string $decrypted;
     protected array $pushArgsSet = [];
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->decrypted = self::MESSAGE;
+    }
 
     public function testEncrypts(): void
     {
@@ -28,8 +36,8 @@ abstract class CryptoSodiumTestCase extends TestCase
 
         foreach ($this->encryptArgsSet as $name => $encryptArgs) {
             self::assertSame(
-                bin2hex((string) $this->ciphertextWithNonce),
-                bin2hex((string) $this->instance->{$this->encryptMethodName}(...$encryptArgs)),
+                bin2hex($this->encrypted),
+                bin2hex(Binary::asBinary($this->instance->{$this->encryptMethodName}(...$encryptArgs))),
                 "{$name} failed",
             );
         }
@@ -43,7 +51,7 @@ abstract class CryptoSodiumTestCase extends TestCase
 
         foreach ($this->decryptArgsSet as $name => $decryptArgs) {
             self::assertSame(
-                static::MESSAGE,
+                $this->decrypted,
                 $this->instance->{$this->decryptMethodName}(...$decryptArgs),
                 "{$name} failed",
             );

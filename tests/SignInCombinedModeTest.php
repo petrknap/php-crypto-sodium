@@ -13,19 +13,15 @@ final class SignInCombinedModeTest extends SignTestCase
     {
         parent::setUp();
 
-        $this->ciphertextWithNonce = new CiphertextWithNonce(
-            ciphertext: base64_decode(self::B64_SIGNATURE) . self::MESSAGE,
-            nonce: '',
-        );
-
         $this->encryptMethodName = 'sign';
         $this->encryptArgsSet = [
             [self::MESSAGE, $this->secretKey],
         ];
+        $this->encrypted = base64_decode(self::B64_SIGNATURE) . self::MESSAGE;
 
         $this->decryptMethodName = 'verified';
         $this->decryptArgsSet = [
-            [$this->ciphertextWithNonce->ciphertext, $this->publicKey],
+            [$this->encrypted, $this->publicKey],
         ];
     }
 }

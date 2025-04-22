@@ -6,5 +6,5 @@ namespace PetrKnap\CryptoSodium;
 
 interface KeyGenerator
 {
-    public function generateKey(): string;
+    public function generateKey(): string; // @todo return Key
 }

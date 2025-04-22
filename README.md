@@ -90,6 +90,25 @@ echo $aes256Gcm->decrypt($ciphertext, $key, additionalData: $purpose);
 $aes256Gcm->eraseData($key);
 ```
 
+### Data signing
+
+```php
+use PetrKnap\CryptoSodium\Sign;
+
+$signer = new Sign();
+$message = 'Hello World!';
+$keyPair = $signer->generateKeyPair();
+$secretKey = $signer->extractSecretKey($keyPair);
+$publicKey = $signer->extractPublicKey($keyPair);
+
+$signedMessage = $signer->sign($message, $secretKey);
+
+echo $signer->verified($signedMessage, $publicKey);
+
+$signer->eraseData($secretKey);
+$signer->eraseData($keyPair);
+```
+
 ---
 
 Run `composer require petrknap/crypto-sodium` to install it.

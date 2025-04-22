@@ -12,21 +12,24 @@ abstract class CryptoSodiumTestCase extends TestCase
 
     /** @var CryptoSodiumInterface|object */
     protected object $instance;
+    /** @todo replace it by string $encryptedMessage */
     protected CiphertextWithNonce $ciphertextWithNonce;
+    protected string $encryptMethodName = 'encrypt';
     protected array $encryptArgsSet = [];
+    protected string $decryptMethodName = 'decrypt';
     protected array $decryptArgsSet = [];
     protected array $pushArgsSet = [];
 
     public function testEncrypts(): void
     {
-        if (empty($this->encryptArgsSet)) {
+        if (!method_exists($this->instance, $this->encryptMethodName)) {
             self::markTestSkipped();
         }
 
         foreach ($this->encryptArgsSet as $name => $encryptArgs) {
             self::assertSame(
                 bin2hex((string) $this->ciphertextWithNonce),
-                bin2hex((string) $this->instance->encrypt(...$encryptArgs)),
+                bin2hex((string) $this->instance->{$this->encryptMethodName}(...$encryptArgs)),
                 "{$name} failed",
             );
         }
@@ -34,14 +37,14 @@ abstract class CryptoSodiumTestCase extends TestCase
 
     public function testDecrypts(): void
     {
-        if (empty($this->decryptArgsSet)) {
+        if (!method_exists($this->instance, $this->decryptMethodName)) {
             self::markTestSkipped();
         }
 
         foreach ($this->decryptArgsSet as $name => $decryptArgs) {
             self::assertSame(
                 static::MESSAGE,
-                $this->instance->decrypt(...$decryptArgs),
+                $this->instance->{$this->decryptMethodName}(...$decryptArgs),
                 "{$name} failed",
             );
         }
@@ -92,5 +95,27 @@ abstract class CryptoSodiumTestCase extends TestCase
                 $this->instance->extractPublicKey($keyPair),
             ),
         );
+    }
+
+    public function testKeyPairGeneratorThrowsOnWrongSeed(): void
+    {
+        if (!($this->instance instanceof KeyPairGenerator)) {
+            self::markTestSkipped();
+        }
+
+        self::expectException(Exception\CouldNotGenerateKeyPair::class);
+
+        $this->instance->generateKeyPair('wrong seed');
+    }
+
+    public function testKeyPairGeneratorThrowsOnWrongKeys(): void
+    {
+        if (!($this->instance instanceof KeyPairGenerator)) {
+            self::markTestSkipped();
+        }
+
+        self::expectException(Exception\CouldNotGenerateKeyPair::class);
+
+        $this->instance->generateKeyPair('wrong secret key', 'wrong public key');
     }
 }

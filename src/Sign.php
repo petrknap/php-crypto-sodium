@@ -25,7 +25,9 @@ use Throwable;
                 'sodium_crypto_sign_secretkey',
                 'sodium_crypto_sign_publickey',
                 'sodium_crypto_sign',
+                'sodium_crypto_sign_detached',
                 'sodium_crypto_sign_open',
+                'sodium_crypto_sign_verify_detached',
             ],
         );
     }
@@ -90,6 +92,25 @@ use Throwable;
     }
 
     /**
+     * @param non-empty-string $secretKey
+     *
+     * @return non-empty-string signature
+     *
+     * @throws Exception\CouldNotSignData
+     */
+    public function signDetached(
+        string $message,
+        #[SensitiveParameter]
+        string &$secretKey,
+    ): string {
+        try {
+            return sodium_crypto_sign_detached($message, $secretKey);
+        } catch (Throwable $reason) {
+            throw new Exception\CouldNotSignData(__METHOD__, $message, $reason);
+        }
+    }
+
+    /**
      * @param non-empty-string $signedMessage
      * @param non-empty-string $publicKey
      *
@@ -112,6 +133,23 @@ use Throwable;
             throw $exception;
         } catch (Throwable $reason) {
             throw new Exception\CouldNotVerifyData(__METHOD__, $signedMessage, $reason);
+        }
+    }
+
+    /**
+     * @param non-empty-string $signature
+     * @param non-empty-string $publicKey
+     */
+    public function verifyDetached(
+        string $signature,
+        string $message,
+        #[SensitiveParameter]
+        string &$publicKey,
+    ): bool {
+        try {
+            return sodium_crypto_sign_verify_detached($signature, $message, $publicKey);
+        } catch (Throwable) {
+            return false;
         }
     }
 }

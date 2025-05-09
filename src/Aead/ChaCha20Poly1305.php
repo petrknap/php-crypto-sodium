@@ -18,13 +18,6 @@ use SensitiveParameter;
     use HasRequirements;
     use CryptoSodiumTrait;
 
-    /**
-     * @deprecated
-     *
-     * @todo remove it
-     */
-    public const HEADER_BYTES = SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_NPUBBYTES;
-
     public function __construct()
     {
         self::checkRequirements(

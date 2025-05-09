@@ -13,13 +13,6 @@ use SensitiveParameter;
     use HasRequirements;
     use CryptoSodiumTrait;
 
-    /**
-     * @deprecated
-     *
-     * @todo remove it
-     */
-    public const HEADER_BYTES = SODIUM_CRYPTO_SECRETBOX_NONCEBYTES;
-
     public function __construct()
     {
         self::checkRequirements(

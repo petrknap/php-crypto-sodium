@@ -26,12 +26,6 @@ use Throwable;
     use CryptoSodiumTrait;
 
     /**
-     * @deprecated use {@see self::getHeaderSize()}
-     *
-     * @todo remove it
-     */
-    public const HEADER_BYTES = SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_HEADERBYTES;
-    /**
      * @todo replace it by Tag enum
      */
     public const TAG_MESSAGE = SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_MESSAGE;
